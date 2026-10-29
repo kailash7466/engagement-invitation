@@ -1,0 +1,803 @@
+<!doctype html><html lang="mr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>अमित आणि प्रिया</title><meta property="og:title" content="अमित आणि प्रिया"><meta property="og:description" content="विवाह निमंत्रण. उघडण्यासाठी टॅप करा."><meta property="og:type" content="website"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&amp;family=Tiro+Devanagari+Marathi:ital@0;1&amp;display=swap"><style id="css">
+/* Layout: one file, two faces. Guests get an envelope that opens onto full-screen pages; the owner gets an editor with tabs (side list on desktop, scroll strip on phones). */
+:root {
+  --e-bg: #f5f2f1; --e-surface: #fffdfc; --e-field: #ffffff; --e-fg: #241a1c; --e-muted: #6d5e61;
+  --e-line: #e1d7d8; --e-accent: #8c1c3b; --e-accent-fg: #ffffff; --e-ok: #1f6b45; --e-bad: #b3261e;
+  --script: 'Tiro Devanagari Marathi', 'Noto Serif Devanagari', serif;
+  --ui: 'Mukta', system-ui, -apple-system, 'Noto Sans Devanagari', sans-serif;
+  --colw: 480px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --e-bg: #161112; --e-surface: #211a1c; --e-field: #2a2124; --e-fg: #f3e9ea; --e-muted: #b3a2a6;
+    --e-line: #3a2f32; --e-accent: #e5849f; --e-accent-fg: #2a0b15; --e-ok: #7fd1a3; --e-bad: #ff9a92; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --e-bg: #161112; --e-surface: #211a1c; --e-field: #2a2124; --e-fg: #f3e9ea; --e-muted: #b3a2a6;
+  --e-line: #3a2f32; --e-accent: #e5849f; --e-accent-fg: #2a0b15; --e-ok: #7fd1a3; --e-bad: #ff9a92; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3, p { margin: 0; }
+button { font: inherit; }
+.splash { min-height: 100vh; display: grid; place-items: center; font-family: var(--script); color: #8a747a; font-style: italic; }
+body.m-boot { background: #f3eae6; }
+
+/* ================= editor ================= */
+body.m-edit { background: var(--e-bg); color: var(--e-fg); font: 16px/1.55 var(--ui); }
+body.m-edit::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--e-bg); }
+.e-wrap { max-width: 1040px; margin: 0 auto; padding-block: 0 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.e-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--e-bg); border-bottom: 1px solid var(--e-line); display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 0; }
+.e-brand { font-family: var(--script); font-style: italic; font-size: 1.3rem; color: var(--e-accent); line-height: 1.2; }
+.e-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.e-status { font-size: .88rem; color: var(--e-muted); }
+.e-status.ok { color: var(--e-ok); } .e-status.bad { color: var(--e-bad); }
+.e-btn { cursor: pointer; border: 1px solid var(--e-line); background: var(--e-field); color: var(--e-fg); border-radius: 8px; padding: 8px 14px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; }
+.e-btn.p { background: var(--e-accent); border-color: var(--e-accent); color: var(--e-accent-fg); }
+.e-btn.wa { background: #1f8a4c; border-color: #1f8a4c; color: #fff; }
+.e-btn.s { padding: 5px 10px; font-size: .9rem; }
+.e-btn:disabled, .e-btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.e-body { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; margin-top: 16px; align-items: start; }
+.e-nav { position: sticky; top: calc(84px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; gap: 2px; }
+.e-nav button { text-align: left; border: 0; background: transparent; color: var(--e-fg); padding: 9px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.e-nav button[aria-selected="true"] { background: var(--e-accent); color: var(--e-accent-fg); }
+.e-main { min-width: 0; }
+.e-card { background: var(--e-surface); border: 1px solid var(--e-line); border-radius: 10px; padding: 16px; margin-bottom: 14px; min-width: 0; }
+.e-card > h2 { font-size: 1.02rem; font-weight: 700; margin-bottom: 12px; }
+.e-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+.e-f { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; min-width: 0; }
+.e-f > label { font-weight: 600; font-size: .93rem; }
+.e-h { color: var(--e-muted); font-size: .85rem; }
+.e-f input[type="text"], .e-f input[type="date"], .e-f input[type="time"], .e-f input[type="tel"], .e-f input[type="url"], .e-f input[type="number"], .e-f input[type="password"], .e-f textarea, .e-f select {
+  width: 100%; font: inherit; font-size: 16px; color: var(--e-fg); background: var(--e-field); border: 1px solid var(--e-line); border-radius: 8px; padding: 9px 11px; min-width: 0; }
+.e-f textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+.e-f input[type="color"] { width: 100%; height: 42px; padding: 3px; border: 1px solid var(--e-line); border-radius: 8px; background: var(--e-field); }
+.e-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.e-seg input { position: absolute; opacity: 0; pointer-events: none; }
+.e-seg label { cursor: pointer; border: 1px solid var(--e-line); background: var(--e-field); border-radius: 8px; padding: 9px 16px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; }
+.e-seg input:checked + label { border-color: var(--e-accent); box-shadow: inset 0 0 0 1px var(--e-accent); color: var(--e-accent); }
+.e-seg input:focus-visible + label, .e-btn:focus-visible, .e-nav button:focus-visible, .e-f input:focus-visible, .e-f textarea:focus-visible, .e-f select:focus-visible, .e-chk input:focus-visible { outline: 2px solid var(--e-accent); outline-offset: 2px; }
+.e-sw { width: 38px; height: 24px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, .25); display: inline-block; }
+.e-chk { display: flex; gap: 10px; align-items: center; padding: 6px 0; }
+.e-chk input { width: 18px; height: 18px; accent-color: var(--e-accent); }
+.e-item { border: 1px solid var(--e-line); border-radius: 8px; padding: 12px; margin-bottom: 10px; background: var(--e-bg); }
+.e-item-h { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+.e-item-h b { color: var(--e-muted); flex: 1; }
+.e-item .e-f:last-child { margin-bottom: 0; }
+.e-ic { border: 1px solid var(--e-line); background: var(--e-field); color: var(--e-fg); border-radius: 6px; width: 34px; height: 32px; cursor: pointer; font-size: 1rem; }
+.e-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+.e-ph { border: 1px solid var(--e-line); border-radius: 8px; overflow: hidden; background: var(--e-bg); display: flex; flex-direction: column; }
+.e-ph img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+.e-ph div { display: flex; justify-content: center; gap: 4px; padding: 6px; }
+.e-note { border-left: 3px solid var(--e-accent); background: var(--e-surface); padding: 10px 14px; margin-bottom: 14px; border-radius: 0 8px 8px 0; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.e-note span { flex: 1 1 240px; min-width: 0; }
+.e-steps { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 6px; }
+.e-steps code { font-family: ui-monospace, monospace; font-size: .88rem; background: var(--e-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.e-guest { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--e-line); }
+.e-guest .e-f { margin-bottom: 0; }
+.e-guest .e-g-act { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.e-toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #241a1c; color: #fff; padding: 10px 16px; border-radius: 8px; z-index: 200; max-width: min(92vw, 420px); font: 600 .95rem/1.4 var(--ui); text-align: center; }
+audio { width: 100%; margin-top: 8px; }
+@media (max-width: 820px) {
+  .e-body { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .e-nav { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .e-nav button { white-space: nowrap; border: 1px solid var(--e-line); }
+}
+@media (max-width: 520px) { .e-row, .e-guest { grid-template-columns: minmax(0, 1fr); } .e-row { gap: 0; } }
+
+/* ================= invitation (guest view) ================= */
+html.vmode { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+html.locked { overflow: hidden; }
+body.m-view { background: var(--paper); color: var(--ink); font-family: var(--script); font-size: 17px; line-height: 1.7; overflow-x: hidden; }
+.col { max-width: var(--colw); margin: 0 auto; position: relative; z-index: 1; }
+body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--paper)); background-attachment: fixed; }
+.pg { position: relative; min-height: 100vh; min-height: 100svh; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px;
+  padding-block: 64px 96px; padding-left: max(58px, env(safe-area-inset-left, 0px)); padding-right: max(58px, env(safe-area-inset-right, 0px)); }
+.pg > * { position: relative; z-index: 1; max-width: 100%; min-width: 0; }
+.flora { position: fixed; top: 0; bottom: 0; width: 56px; z-index: 0; pointer-events: none; }
+.flora svg { width: 100%; height: 100%; display: block; }
+.flora.l { left: max(0px, calc(50% - var(--colw) / 2)); }
+.flora.r { right: max(0px, calc(50% - var(--colw) / 2)); transform: scaleX(-1); }
+.kick { font-family: var(--ui); font-weight: 700; font-size: .85rem; color: var(--muted); }
+.lbl { font-family: var(--ui); font-weight: 700; font-size: .85rem; color: var(--blue); }
+.script { font-style: italic; color: var(--wine); line-height: 1.25; }
+.t1 { font-size: clamp(2.2rem, 10vw, 2.9rem); font-weight: 400; text-wrap: balance; overflow-wrap: anywhere; }
+.t2 { font-size: clamp(1.7rem, 8vw, 2.2rem); font-weight: 400; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 1rem; text-wrap: balance; overflow-wrap: anywhere; }
+.par { color: var(--muted); font-size: .98rem; overflow-wrap: anywhere; }
+.rule { width: 120px; height: 1px; background: var(--line); position: relative; margin: 4px auto; }
+.rule::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; background: var(--wine); transform: translate(-50%, -50%) rotate(45deg); }
+.datel { font-size: 1.3rem; color: var(--wine); font-style: italic; }
+.hint { position: fixed; left: 0; right: 0; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; font-family: var(--ui); font-weight: 700; font-size: .78rem; color: var(--wine); transition: opacity .3s; }
+.hint.off { opacity: 0; }
+.mouse { width: 22px; height: 34px; border: 2px solid var(--wine); border-radius: 12px; position: relative; }
+.mouse::after { content: ""; position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: var(--wine); animation: wheel 1.6s ease-in-out infinite; }
+@keyframes wheel { 0% { transform: translateY(0); opacity: 1; } 70%, 100% { transform: translateY(10px); opacity: 0; } }
+.count { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; width: 100%; margin-top: 8px; }
+.count b { display: block; font-weight: 400; font-style: italic; font-size: clamp(1.8rem, 9vw, 2.4rem); color: var(--wine); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.count span { font-family: var(--ui); font-weight: 600; font-size: .78rem; color: var(--muted); }
+.venue-art { width: min(100%, 270px); height: auto; }
+.pin { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--blue); display: grid; place-items: center; background: var(--paper2); }
+.dir { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); background: var(--card); border: 1px solid var(--blue-soft); border-radius: 14px; padding: 10px 16px; font-family: var(--ui); text-align: left; }
+.dir b { display: block; font-weight: 700; font-size: .95rem; }
+.dir small { color: var(--muted); font-size: .8rem; }
+.tl { position: relative; width: 100%; display: flex; flex-direction: column; gap: 26px; margin-top: 6px; }
+.tl::before { content: ""; position: absolute; left: 50%; top: 4px; bottom: 4px; width: 1px; background: var(--blue-soft); }
+.tl .it { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr); gap: 10px; align-items: start; text-align: left; }
+.tl .dot { width: 11px; height: 11px; border: 1.5px solid var(--blue); background: var(--paper2); border-radius: 50%; margin-top: 12px; justify-self: center; order: 2; }
+.tl .a, .tl .b { min-width: 0; }
+.tl .it .a { order: 1; text-align: right; } .tl .it .b { order: 3; }
+.tl .it.flip .a { order: 3; text-align: left; } .tl .it.flip .b { order: 1; text-align: right; }
+.tl .tm { font-size: 1.4rem; font-style: italic; color: var(--wine); line-height: 1.2; overflow-wrap: anywhere; }
+.tl .nm { font-family: var(--ui); font-weight: 700; font-size: .85rem; color: var(--blue); overflow-wrap: anywhere; }
+.tl .ds { font-size: .88rem; color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
+.tl .ic { width: 34px; height: 34px; margin-bottom: 2px; }
+.tl .it .a .ic { margin-left: auto; } .tl .it.flip .a .ic { margin-left: 0; }
+.sw { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+.sw div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--ui); font-size: .78rem; color: var(--muted); width: 60px; text-align: center; overflow-wrap: anywhere; }
+.sw i { width: 34px; height: 34px; border-radius: 50%; display: block; box-shadow: 0 0 0 3px var(--paper2), 0 0 0 4px var(--line); }
+.dc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
+.dc b { display: block; font-family: var(--ui); font-size: .78rem; color: var(--muted); }
+.gal { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; width: calc(100% + 40px); margin-inline: -20px; padding-inline: 20px; padding-bottom: 6px; }
+.gal > * { flex: 0 0 min(220px, 100%); scroll-snap-align: center; }
+.oval { aspect-ratio: 3 / 4; border-radius: 50%; border: 2px solid var(--gold); box-shadow: 0 0 0 6px var(--paper2), 0 0 0 7px var(--gold-soft); overflow: hidden; background: var(--paper); max-width: 100%; }
+.oval img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.faq { width: 100%; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.faq details { background: var(--card); border: 1px solid var(--blue-soft); border-radius: 12px; padding: 0 14px; }
+.faq summary { cursor: pointer; font-family: var(--ui); font-weight: 700; font-size: .95rem; padding: 11px 0; list-style: none; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-right: 2px solid var(--wine); border-bottom: 2px solid var(--wine); transform: rotate(45deg); transition: transform .2s; }
+.faq details[open] summary::after { transform: rotate(-135deg); }
+.faq p { padding: 0 0 12px; font-size: .95rem; color: var(--muted); line-height: 1.6; }
+.rsvp { width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; background: var(--card); border: 1px solid var(--blue-soft); border-radius: 14px; padding: 16px; }
+.rsvp .l { display: block; font-family: var(--ui); font-weight: 600; font-size: .85rem; color: var(--wine); margin-bottom: 3px; }
+.rsvp input[type="text"], .rsvp input[type="number"], .rsvp textarea { width: 100%; font-family: var(--ui); font-size: 16px; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; }
+.rsvp textarea { min-height: 72px; resize: vertical; }
+.opts { display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--ui); font-size: .95rem; }
+.opts label { display: flex; align-items: center; gap: 7px; }
+.opts input { accent-color: var(--wine); width: 18px; height: 18px; }
+.btn { font-family: var(--ui); font-weight: 700; font-size: 1rem; background: var(--wine); color: var(--wine-fg); border: 0; border-radius: 10px; padding: 12px 18px; cursor: pointer; text-decoration: none; display: inline-flex; justify-content: center; align-items: center; text-align: center; }
+.btn.wa { background: #1f8a4c; color: #fff; }
+.btn.ghost { background: transparent; color: var(--wine); border: 1px solid var(--wine); }
+.err { color: var(--wine); font-family: var(--ui); font-size: .88rem; min-height: 1.2em; }
+.done { width: 100%; background: var(--card); border: 1px solid var(--blue-soft); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; font-family: var(--ui); }
+.done textarea { width: 100%; font: 15px/1.5 var(--ui); min-height: 110px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--field); color: var(--ink); }
+#vw input:focus-visible, #vw textarea:focus-visible, #vw .btn:focus-visible, #vw summary:focus-visible, #vw .dir:focus-visible, .mus:focus-visible, .back:focus-visible { outline: 2px solid var(--wine); outline-offset: 2px; }
+#env { position: fixed; inset: 0; z-index: 100; cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+#env .fl { position: absolute; inset: 0; transition: transform .95s cubic-bezier(.65, 0, .25, 1); }
+#env .ft { clip-path: polygon(0 0, 100% 0, 50% 50%); background: linear-gradient(180deg, var(--paper2), var(--paper)); }
+#env .fb { clip-path: polygon(0 100%, 100% 100%, 50% 50%); background: linear-gradient(0deg, var(--paper), var(--paper2)); filter: brightness(.97); }
+#env .fle { clip-path: polygon(0 0, 50% 50%, 0 100%); background: linear-gradient(90deg, var(--paper), var(--paper2)); filter: brightness(.98); }
+#env .fr { clip-path: polygon(100% 0, 100% 100%, 50% 50%); background: linear-gradient(270deg, var(--paper), var(--paper2)); filter: brightness(.96); }
+#env .seams { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .5s; }
+#env .top { position: absolute; top: calc(7% + env(safe-area-inset-top, 0px)); left: 0; right: 0; text-align: center; padding-inline: max(24px, env(safe-area-inset-left, 0px)); transition: opacity .4s, transform .8s; color: var(--wine); }
+#env .top .script { overflow-wrap: anywhere; }
+#env .tap { position: absolute; bottom: calc(6% + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; text-align: center; color: var(--wine); font-style: italic; font-size: 1.15rem; transition: opacity .4s; }
+#env .seal { position: absolute; left: 50%; top: 50%; width: 128px; height: 128px; margin: -64px 0 0 -64px; transition: transform .6s ease-in, opacity .5s; filter: drop-shadow(0 6px 8px rgba(60, 30, 20, .35)); animation: breathe 2.6s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+#env.open .ft { transform: translateY(-102%); } #env.open .fb { transform: translateY(102%); }
+#env.open .fle { transform: translateX(-102%); } #env.open .fr { transform: translateX(102%); }
+#env.open .seal { transform: scale(1.4); opacity: 0; animation: none; }
+#env.open .seams, #env.open .top, #env.open .tap { opacity: 0; }
+#env.open .top { transform: translateY(-40px); }
+.go .rise > * { animation: rise .9s both ease-out; }
+.go .rise > *:nth-child(2) { animation-delay: .15s; } .go .rise > *:nth-child(3) { animation-delay: .3s; }
+.go .rise > *:nth-child(4) { animation-delay: .45s; } .go .rise > *:nth-child(5) { animation-delay: .6s; } .go .rise > *:nth-child(6) { animation-delay: .75s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.tag { position: fixed; left: max(8px, env(safe-area-inset-left, 0px)); top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 120; font: 600 12px system-ui, sans-serif; background: var(--wine); color: var(--wine-fg); padding: 3px 9px; border-radius: 3px; }
+.back { position: fixed; right: max(10px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 130; font: 700 14px var(--ui); background: var(--wine); color: var(--wine-fg); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.mus { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 40; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--wine); background: var(--card); color: var(--wine); display: grid; place-items: center; cursor: pointer; padding: 0; }
+@media (prefers-reduced-motion: reduce) {
+  html.vmode { scroll-behavior: auto; }
+  .mouse::after, #env .seal, .go .rise > * { animation: none; }
+  #env .fl, #env .seal { transition: none; }
+}
+@media (max-width: 380px) { .pg { padding-left: max(54px, env(safe-area-inset-left, 0px)); padding-right: max(54px, env(safe-area-inset-right, 0px)); } .dc { grid-template-columns: 1fr; } }
+</style></head><body><div id="root"></div><script type="application/json" id="inv-data">{}</script><script id="app">
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $('root');
+  var END = '</scr' + 'ipt>';
+  var FONTS = 'https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&amp;family=Tiro+Devanagari+Marathi:ital@0;1&amp;display=swap';
+  var SKEL = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>';
+  var CLAUDE = (window.claude && typeof window.claude.use === 'function') ? window.claude : null;
+
+  var MON = ['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
+  var WD = ['रविवार','सोमवार','मंगळवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+  var DEV = '०१२३४५६७८९';
+  var mr = function (s) { return String(s).replace(/[0-9]/g, function (d) { return DEV[d]; }); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
+  var clone = function (x) { return JSON.parse(JSON.stringify(x)); };
+  function get(o, p) { return p.split('.').reduce(function (a, k) { return a == null ? a : a[k]; }, o); }
+  function set(o, p, v) { var ks = p.split('.'), last = ks.pop(); ks.reduce(function (a, k) { return a[k]; }, o)[last] = v; }
+
+  /* ---------------- data ---------------- */
+  var HEAD = { wedding: 'आम्ही लग्न करत आहोत', engagement: 'आमचा साखरपुडा आहे' };
+  var ENVL = { wedding: 'आपणास आमच्या लग्नाचे निमंत्रण आहे', engagement: 'आपणास आमच्या साखरपुड्याचे निमंत्रण आहे' };
+  var DEF = {
+    sample: true, type: 'wedding', theme: 'ivory', digits: 'mr',
+    tagline: 'दोन हृदये, एक प्रेम', headline: HEAD.wedding, message: '', envLine: ENVL.wedding,
+    groom: 'अमित', gpar: 'श्री. रमेश व सौ. सुनीता देशमुख', bride: 'प्रिया', bpar: 'श्री. सुनील व सौ. अनघा कुलकर्णी',
+    date: '2026-12-13', time: '12:20',
+    venue: 'श्री गणेश मंगल कार्यालय', addr: 'टिळक रोड, पुणे ४११०३०', map: '',
+    events: [
+      { time: 'सायं. ५:००', t: 'हळद समारंभ', d: 'पिवळ्या रंगात, गाणी आणि आनंद', icon: 'flower' },
+      { time: 'सकाळी ११:००', t: 'आगमन', d: 'स्वागत आणि अल्पोपाहार', icon: 'cup' },
+      { time: 'दुपारी १२:२०', t: 'शुभविवाह', d: 'मंगलाष्टके आणि अक्षता', icon: 'rings' },
+      { time: 'दुपारी १:००', t: 'स्नेहभोजन', d: 'सर्वांसाठी पंगत', icon: 'food' },
+      { time: 'सायं. ४:००', t: 'पाठवणी', d: 'आशीर्वाद घेऊन निरोप', icon: 'car' }
+    ],
+    dress: { women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
+    photos: [],
+    music: { src: '', name: '', size: 0, start: 0, auto: true },
+    faq: [
+      { q: 'सोबत एखादी व्यक्ती आणता येईल का?', a: 'होय. कृपया उपस्थितीच्या फॉर्ममध्ये एकूण संख्या कळवा, म्हणजे बसण्याची आणि जेवणाची सोय करता येईल.' },
+      { q: 'लहान मुलांना आणता येईल का?', a: 'अवश्य. मुलांचे स्वागतच आहे.' },
+      { q: 'गाडी लावण्याची सोय आहे का?', a: 'कार्यालयासमोर पार्किंगची सोय आहे.' },
+      { q: 'भेटवस्तूंबद्दल काय?', a: 'आपली उपस्थिती आणि आशीर्वाद हीच आमच्यासाठी सर्वात मोठी भेट आहे.' }
+    ],
+    host: 'देशमुख व कुलकर्णी परिवार', hostPhone: '9876543210', rsvpBy: '', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
+    show: { family: true, countdown: true, venue: true, timeline: true, dress: true, gallery: true, faq: true, rsvp: true },
+    shareUrl: '',
+    guests: [{ id: 'gsharma', name: 'श्री. शर्मा परिवार' }, { id: 'gjoshi', name: 'सौ. व श्री. जोशी' }]
+  };
+  var TH = {
+    ivory:    { n: 'पांढरा-निळा', paper: '#f3eae6', paper2: '#fbf6f2', ink: '#5a2a31', accent: '#8e2436', accentFg: '#fff8f4', gold: '#b8923a', blue: '#7d92a6', muted: '#8a747a', card: 'rgba(255,255,255,.82)', field: '#ffffff', leaf: ['#7d92a6', '#9db0c0', '#6a8196', '#b4c3cf'], rose: '#fbf7f2', roseLine: '#dccdbb', stem: '#8d6f5a', dark: false },
+    paithani: { n: 'पैठणी', paper: '#0d3b44', paper2: '#145160', ink: '#f7ecd0', accent: '#ff86ae', accentFg: '#3a0a1c', gold: '#e4b552', blue: '#8fc1c4', muted: '#cdbf9c', card: 'rgba(8,42,49,.72)', field: '#0a2d34', leaf: ['#2c7a85', '#1f6671', '#3f8f99', '#17525c'], rose: '#f7ecd0', roseLine: '#c8b27a', stem: '#c9a85a', dark: true },
+    kunku:    { n: 'कुंकू', paper: '#6a1220', paper2: '#7f1c2c', ink: '#fbebcb', accent: '#ffb55c', accentFg: '#3a1204', gold: '#e8bb5a', blue: '#e6a07a', muted: '#e0c9a0', card: 'rgba(60,8,18,.6)', field: '#4d0b16', leaf: ['#a33c4a', '#8c2a38', '#c15563', '#7a2030'], rose: '#fbebcb', roseLine: '#d9b878', stem: '#d8a860', dark: true },
+    haldi:    { n: 'हळद', paper: '#fbefc2', paper2: '#fff7da', ink: '#4a1b14', accent: '#1c6b48', accentFg: '#ffffff', gold: '#a8741a', blue: '#6f9a7e', muted: '#7d6a4f', card: 'rgba(255,255,255,.7)', field: '#ffffff', leaf: ['#6f9a7e', '#8fb59a', '#57836a', '#a9c8b2'], rose: '#fff7e0', roseLine: '#d6b96a', stem: '#8d6f2a', dark: false }
+  };
+  var ICONS = { flower: 'फूल (हळद)', cup: 'कप (स्वागत)', rings: 'अंगठ्या (विवाह)', food: 'जेवण', car: 'गाडी (पाठवणी)', music: 'संगीत' };
+  var IC = {
+    flower: '<circle cx="17" cy="17" r="3"/><circle cx="17" cy="8" r="4"/><circle cx="17" cy="26" r="4"/><circle cx="8" cy="17" r="4"/><circle cx="26" cy="17" r="4"/>',
+    cup: '<path d="M9 8h16l-2 10a6 6 0 0 1-12 0z"/><path d="M17 24v5M12 30h10"/>',
+    rings: '<circle cx="12" cy="20" r="7"/><circle cx="22" cy="20" r="7"/><path d="M9 8l3-4 3 4-3 3z"/>',
+    food: '<path d="M10 5v9a3 3 0 0 0 6 0V5M13 5v24"/><path d="M24 5c-3 3-3 10 0 12v12"/>',
+    car: '<path d="M5 22l3-8h18l3 8v5H5z"/><circle cx="11" cy="27" r="2.5"/><circle cx="24" cy="27" r="2.5"/>',
+    music: '<path d="M13 25V7l13-3v18"/><circle cx="10" cy="25" r="3"/><circle cx="23" cy="22" r="3"/>'
+  };
+
+  var S = load();
+  function load() {
+    var o = {}; try { o = JSON.parse($('inv-data').textContent || '{}'); } catch (e) {}
+    var d = clone(DEF);
+    Object.keys(o).forEach(function (k) {
+      if (o[k] && typeof o[k] === 'object' && !Array.isArray(o[k]) && d[k] && typeof d[k] === 'object' && !Array.isArray(d[k])) d[k] = Object.assign(d[k], o[k]);
+      else d[k] = o[k];
+    });
+    return d;
+  }
+
+  /* ---------------- browser storage helpers ---------------- */
+  var ls = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  function phones() { try { return JSON.parse(ls.get('mn-phones') || '{}'); } catch (e) { return {}; } }
+  function savePhones(p) { ls.set('mn-phones', JSON.stringify(p)); }
+  function ghStore() { try { return JSON.parse(ls.get('mn-gh') || '{}'); } catch (e) { return {}; } }
+  var GHI = (function () {
+    var m = /^([^.]+)\.github\.io$/i.exec(location.hostname); if (!m) return {};
+    var seg = location.pathname.split('/').filter(Boolean)[0];
+    return { owner: m[1], repo: (seg && seg.indexOf('.') < 0) ? seg : (m[1] + '.github.io') };
+  })();
+  function ghCfg() { var s = ghStore(); return { owner: s.owner || GHI.owner || '', repo: s.repo || GHI.repo || '', branch: s.branch || '', path: s.path || 'index.html', token: s.token || '' }; }
+
+  /* ---------------- state ---------------- */
+  var mode = 'boot', tab = 'basics', dirty = false, busy = false, draftTimer = 0;
+  var timers = [], cleanups = [];
+  var TABS = [['basics', 'मुख्य माहिती'], ['venue', 'स्थळ'], ['events', 'कार्यक्रम'], ['dress', 'पोशाख'], ['photos', 'फोटो'], ['music', 'गाणे'], ['faq', 'प्रश्न-उत्तर'], ['host', 'निमंत्रक'], ['look', 'रंग आणि पाने'], ['share', 'पाठवा']];
+
+  /* ---------------- boot ---------------- */
+  function decideEditor() {
+    if (CLAUDE) {
+      return Promise.race([
+        CLAUDE.use('user').then(function (u) { return u ? u.canEdit() : false; }).catch(function () { return false; }),
+        new Promise(function (r) { setTimeout(function () { r(false); }, 1800); })
+      ]);
+    }
+    return Promise.resolve(location.hash === '#edit');
+  }
+  document.body.className = 'm-boot';
+  decideEditor().then(function (ed) { if (ed) enterEdit(); else enterView(false); });
+
+  function leaveAll() {
+    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); }); timers = [];
+    cleanups.forEach(function (f) { try { f(); } catch (e) {} }); cleanups = [];
+    var h = document.documentElement;
+    h.classList.remove('vmode', 'locked'); h.removeAttribute('style');
+    document.body.removeAttribute('style');
+  }
+
+  /* ======================================================================
+     GUEST VIEW
+     ====================================================================== */
+  function hexA(hex, a) { var n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+  function applyTheme() {
+    var t = TH[S.theme] || TH.ivory, st = document.documentElement.style;
+    st.setProperty('--paper', t.paper); st.setProperty('--paper2', t.paper2); st.setProperty('--ink', t.ink);
+    st.setProperty('--wine', t.accent); st.setProperty('--wine-fg', t.accentFg); st.setProperty('--gold', t.gold);
+    st.setProperty('--gold-soft', hexA(t.gold, .45)); st.setProperty('--blue', t.blue); st.setProperty('--blue-soft', hexA(t.blue, .4));
+    st.setProperty('--muted', t.muted); st.setProperty('--line', hexA(t.accent, .28)); st.setProperty('--card', t.card); st.setProperty('--field', t.field);
+    st.background = t.paper; st.colorScheme = t.dark ? 'dark' : 'light';
+    document.body.style.background = t.paper;
+  }
+  function floraSvg(t) {
+    var s = '<svg viewBox="0 0 70 1000" preserveAspectRatio="xMinYMid slice" aria-hidden="true">', pts = [];
+    for (var y = -20; y <= 1020; y += 20) pts.push((14 + 9 * Math.sin(y / 95)).toFixed(1) + ' ' + y);
+    s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + t.stem + '" stroke-width="1.6" opacity=".7"/>';
+    var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var i = 0; i < 46; i++) {
+      var yy = i * 22 + 4, xx = 14 + 9 * Math.sin(yy / 95), len = 16 + rnd() * 16, ang = (i % 2 ? 28 : -18) + rnd() * 30 - 15 + 40;
+      s += '<g transform="translate(' + xx.toFixed(1) + ' ' + yy + ') rotate(' + ang.toFixed(0) + ')"><path d="M0 0C' + (len * .3) + ' -7 ' + (len * .75) + ' -7 ' + len + ' 0C' + (len * .75) + ' 7 ' + (len * .3) + ' 7 0 0Z" fill="' + t.leaf[i % 4] + '" opacity="' + (0.55 + rnd() * .4).toFixed(2) + '"/><path d="M0 0H' + len + '" stroke="#fff" stroke-width=".6" opacity=".4"/></g>';
+    }
+    [[90, 17], [300, 14], [520, 18], [740, 15], [930, 17]].forEach(function (r) {
+      var cx = 24 + 9 * Math.sin(r[0] / 95), cy = r[0], R = r[1];
+      s += '<g><circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="' + t.rose + '" stroke="' + t.roseLine + '"/><circle cx="' + (cx + 1) + '" cy="' + (cy - 1) + '" r="' + (R * .7) + '" fill="' + t.rose + '" stroke="' + t.roseLine + '" stroke-width=".9"/><path d="M' + (cx - R * .45) + ' ' + cy + 'A' + (R * .45) + ' ' + (R * .45) + ' 0 1 1 ' + (cx + R * .1) + ' ' + (cy + R * .45) + '" fill="none" stroke="' + t.roseLine + '"/><circle cx="' + cx + '" cy="' + cy + '" r="' + (R * .18) + '" fill="' + t.gold + '"/></g>';
+    });
+    for (var k = 0; k < 14; k++) s += '<circle cx="' + (24 + rnd() * 26).toFixed(0) + '" cy="' + (k * 72 + 30) + '" r="' + (1.8 + rnd() * 1.6).toFixed(1) + '" fill="' + (k % 2 ? t.gold : t.rose) + '" opacity=".85"/>';
+    return s + '</svg>';
+  }
+  function sealSvg(t) {
+    var a = (S.groom || '').trim().charAt(0), b = (S.bride || '').trim().charAt(0);
+    return '<svg class="seal" viewBox="0 0 128 128" aria-hidden="true"><defs><radialGradient id="sg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#f3dc92"/><stop offset=".55" stop-color="#c79c3e"/><stop offset="1" stop-color="#8f6a1f"/></radialGradient></defs>' +
+      '<path d="M64 4c9 0 13 8 22 8 10 0 14 9 18 17 6 6 16 8 16 20 0 8-8 12-8 20 6 10 4 14-2 22-6 6-6 14-16 18-8 2-12 8-22 8-9 0-13-8-22-8-10 0-14-8-18-16-6-6-16-8-16-20 0-8 8-12 8-20-6-10-4-14 2-22 6-6 6-14 16-18 8-2 12-8 22-8z" fill="url(#sg)"/>' +
+      '<circle cx="64" cy="64" r="44" fill="none" stroke="#8f6a1f" stroke-width="2" opacity=".6"/><circle cx="64" cy="64" r="38" fill="none" stroke="#f6e5aa" stroke-width="1.2" opacity=".7"/>' +
+      '<text x="64" y="76" text-anchor="middle" font-family="Tiro Devanagari Marathi, serif" font-size="32" font-style="italic" fill="#7a5a18" stroke="#f6e5aa" stroke-width=".4">' + esc(a) + '&#160;' + esc(b) + '</text></svg>';
+  }
+  var iconSvg = function (k, c) { return '<svg class="ic" viewBox="0 0 34 34" fill="none" stroke="' + c + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC[k] || IC.flower) + '</svg>'; };
+
+  function viewerHtml(preview) {
+    var t = TH[S.theme] || TH.ivory, WED = S.type !== 'engagement', sh = S.show || {};
+    var N = function (s) { return S.digits === 'en' ? String(s == null ? '' : s) : mr(s == null ? '' : s); };
+    var dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(S.date || ''), tm = /^(\d{2}):(\d{2})/.exec(S.time || '');
+    var dtxt = dm ? N(dm[3] + ' ' + MON[+dm[2] - 1] + ' ' + dm[1]) : '';
+    var sl = (location.hash || '').replace('#', ''), gn = '';
+    (S.guests || []).forEach(function (g) { if (g.id === sl) gn = g.name; });
+    var mapUrl = S.map || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(((S.venue || '') + ' ' + (S.addr || '')).trim()));
+    var h = '<div id="vw">';
+    h += '<div id="env" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
+      '<svg class="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="' + t.gold + '" fill="none" stroke-width="1" vector-effect="non-scaling-stroke"><path d="M0 0L50 50L100 0M0 100L50 50L100 100M0 0L50 50L0 100M100 0L50 50L100 100" vector-effect="non-scaling-stroke"/></g></svg>' +
+      '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div>' + sealSvg(t) + '<div class="tap">उघडण्यासाठी टॅप करा</div></div>';
+    h += '<div class="flora l">' + floraSvg(t) + '</div><div class="flora r">' + floraSvg(t) + '</div><div class="col" id="col">';
+
+    h += '<section class="pg"><div class="rise" style="display:contents">' +
+      (S.tagline ? '<p class="kick">' + esc(N(S.tagline)) + '</p>' : '<span></span>') + '<h2 class="t2 script">' + esc(N(S.headline)) + '</h2>' +
+      '<h1 class="t1 script" style="margin:0">' + esc(N(S.groom)) + '</h1><div class="script" style="font-size:1.5rem">आणि</div><h1 class="t1 script" style="margin:0">' + esc(N(S.bride)) + '</h1>' +
+      '<div class="rule"></div>' + (dtxt ? '<div class="datel">' + esc(dtxt) + '</div>' : '') + (S.message ? '<p class="sub">' + esc(N(S.message)) + '</p>' : '') + '</div></section>';
+
+    if (sh.family !== false && (S.gpar || S.bpar)) {
+      h += '<section class="pg"><p class="script" style="font-size:1.1rem">॥ श्री गणेशाय नमः ॥</p><div class="lbl">वर</div><div class="t1 script">चि. ' + esc(N(S.groom)) + '</div>' + (S.gpar ? '<p class="par">' + esc(N(S.gpar)) + '<br>यांचे चिरंजीव</p>' : '') +
+        '<div class="rule"></div><div class="lbl">वधू</div><div class="t1 script">चि.सौ.कां. ' + esc(N(S.bride)) + '</div>' + (S.bpar ? '<p class="par">' + esc(N(S.bpar)) + '<br>यांची कन्या</p>' : '') + '</section>';
+    }
+    if (sh.countdown !== false && dm && tm) {
+      h += '<section class="pg"><h2 class="t1 script">उलटगणती</h2><p class="sub">या क्षणाची आम्ही आतुरतेने वाट पाहत आहोत</p><div class="count" id="cd"><div><b id="c-d">०</b><span>दिवस</span></div><div><b id="c-h">०</b><span>तास</span></div><div><b id="c-m">०</b><span>मिनिटे</span></div><div><b id="c-s">०</b><span>सेकंद</span></div></div><p class="script" id="c-msg" style="font-size:1.2rem"></p></section>';
+    }
+    if (sh.venue !== false && (S.venue || S.addr)) {
+      h += '<section class="pg"><h2 class="t1 script">कार्यक्रम स्थळ</h2>' +
+        '<svg class="venue-art" viewBox="0 0 270 190" aria-hidden="true"><g fill="none" stroke="' + t.blue + '" stroke-width="1.4" stroke-linejoin="round"><path d="M20 170h230" stroke="' + t.gold + '"/><path d="M40 170V92h40v78M190 170V92h40v78M80 170V70h110v100" fill="' + hexA(t.rose, .5) + '"/><path d="M112 70V40l23-22 23 22v30" fill="' + hexA(t.rose, .7) + '"/><path d="M135 18v-8M131 12h8" stroke="' + t.gold + '"/><path d="M120 170v-44a15 15 0 0 1 30 0v44" fill="' + hexA(t.gold, .35) + '"/><path d="M96 98h14M160 98h14M96 122h14M160 122h14"/><path d="M40 92l20-18 20 18M190 92l20-18 20 18"/><path d="M105 170v6h60v-6M95 176v6h80v-6" stroke="' + t.gold + '"/><circle cx="22" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M22 154v16"/><circle cx="248" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M248 154v16"/></g></svg>' +
+        '<div class="pin"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="' + t.accent + '" stroke-width="1.6"><path d="M9 16s5-4.6 5-8.5a5 5 0 0 0-10 0C4 11.4 9 16 9 16z"/><circle cx="9" cy="7.5" r="1.8"/></svg></div>' +
+        (S.venue ? '<h3 class="t2 script" style="margin:0">' + esc(N(S.venue)) + '</h3>' : '') + (S.addr ? '<p class="sub">' + esc(N(S.addr)) + '</p>' : '') +
+        '<a class="dir" href="' + esc(mapUrl) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="' + t.blue + '" stroke-width="1.6" stroke-linejoin="round"><path d="M3 10l16-7-7 16-2-7z"/></svg><span><b>दिशा मिळवा</b><small>Google Maps मध्ये उघडा</small></span></a></section>';
+    }
+    if (sh.timeline !== false && S.events && S.events.length) {
+      h += '<section class="pg"><h2 class="t2 script">आम्ही तुमच्यासाठी काय नियोजित केले आहे</h2><div class="tl">' + S.events.map(function (e, i) {
+        return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + iconSvg(e.icon, t.blue) + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
+      }).join('') + '</div></section>';
+    }
+    if (sh.dress !== false && S.dress && (S.dress.women || S.dress.men || (S.dress.colors || []).length)) {
+      h += '<section class="pg"><h2 class="t1 script">पोशाख</h2>' + ((S.dress.women || S.dress.men) ? '<div class="dc"><div><b>महिला</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.women)) + '</div></div><div><b>पुरुष</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.men)) + '</div></div></div>' : '') +
+        ((S.dress.colors || []).length ? '<p class="script" style="font-size:1.2rem;margin-top:8px">सुचवलेले रंग</p><div class="sw">' + S.dress.colors.map(function (c) { return '<div><i style="background:' + esc(c.c) + '"></i>' + esc(N(c.n)) + '</div>'; }).join('') + '</div>' : '') + '</section>';
+    }
+    if (sh.gallery !== false && S.photos && S.photos.length) {
+      h += '<section class="pg"><h2 class="t1 script">फोटो गॅलरी</h2><p class="sub">आमच्या आठवणीतील क्षण</p><div class="gal">' + S.photos.map(function (u) { return '<div class="oval"><img src="' + esc(u) + '" alt="फोटो"></div>'; }).join('') + '</div></section>';
+    }
+    if (sh.faq !== false && S.faq && S.faq.length) {
+      h += '<section class="pg"><h2 class="t1 script">नेहमीचे प्रश्न</h2><div class="faq">' + S.faq.map(function (q) { return '<details><summary>' + esc(N(q.q)) + '</summary><p>' + esc(N(q.a)) + '</p></details>'; }).join('') + '</div></section>';
+    }
+    if (sh.rsvp !== false) {
+      h += '<section class="pg"><h2 class="t1 script">उपस्थितीची माहिती</h2><p class="sub">आपण येणार का, ते कृपया कळवा' + (S.rsvpBy ? '. ' + esc(N(S.rsvpBy)) + ' पर्यंत.' : '.') + '</p>' +
+        '<div class="rsvp" id="rf"><div><label class="l" for="r-name">पूर्ण नाव *</label><input type="text" id="r-name" autocomplete="name" value="' + esc(gn) + '"></div>' +
+        '<div><span class="l">आपण उपस्थित राहणार का? *</span><div class="opts"><label><input type="radio" name="att" value="yes" checked> होय, येणार</label><label><input type="radio" name="att" value="no"> नाही, येता येणार नाही</label></div></div>' +
+        '<div><label class="l" for="r-n">एकूण किती जण (आपल्यासह)</label><input type="number" id="r-n" min="1" max="20" value="1" inputmode="numeric"></div>' +
+        '<div><label class="l" for="r-diet">आहाराबद्दल काही सूचना (ऐच्छिक)</label><input type="text" id="r-diet"></div>' +
+        '<div><label class="l" for="r-msg">शुभेच्छा संदेश (ऐच्छिक)</label><textarea id="r-msg"></textarea></div>' +
+        '<div class="err" id="r-err" role="alert"></div><button class="btn" type="button" id="r-go">पुढे जा</button></div>' +
+        '<div class="done" id="done" hidden><p class="script" style="font-size:1.3rem">धन्यवाद!</p><p class="sub" style="font-size:.9rem">उत्तर पाठवण्यासाठी खालील बटण दाबा. WhatsApp उघडेल. तिथे ‘पाठवा’ दाबल्यावरच आम्हाला संदेश मिळेल.</p><a class="btn wa" id="r-wa" href="#" target="_blank" rel="noopener">WhatsApp वर कळवा</a><button type="button" class="btn ghost" id="r-cp">संदेश कॉपी करा</button><textarea id="r-box" readonly></textarea></div></section>';
+    }
+    h += '<section class="pg"><p class="script" style="font-size:1.2rem">॥ श्री गणेशाय नमः ॥</p><h2 class="t2 script">' + esc(N(S.closing)) + '</h2><div class="rule"></div>' +
+      (S.host ? '<div class="sub">आपले नम्र</div><div class="script" style="font-size:1.6rem">' + esc(N(S.host)) + '</div>' : '') + '<p class="script" style="font-size:1.1rem;margin-top:10px">॥ शुभं भवतु ॥</p></section></div>';
+    h += '<div class="hint off" id="hint"><span>अधिक माहितीसाठी स्क्रोल करा</span><div class="mouse"></div></div>';
+    if (S.music && S.music.src) h += '<audio id="bgm" loop preload="auto" src="' + esc(S.music.src) + '"></audio><button type="button" class="mus" id="mus" aria-label="गाणे बंद करा" hidden></button>';
+    if (S.sample) h += '<div class="tag">नमुना निमंत्रण</div>';
+    if (preview) h += '<button type="button" class="back" id="back">← संपादनाकडे परत</button>';
+    return h + '</div>';
+  }
+
+  function enterView(preview) {
+    leaveAll(); mode = 'view';
+    document.documentElement.classList.add('vmode'); document.body.className = 'm-view';
+    applyTheme(); root.innerHTML = viewerHtml(preview);
+    var N = function (s) { return S.digits === 'en' ? String(s == null ? '' : s) : mr(s == null ? '' : s); };
+    document.documentElement.classList.add('locked');
+    var env = $('env'), opened = false, hint = $('hint'), bgm = $('bgm'), mus = $('mus'), muted = false, playing = false;
+    var ICON_ON = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/></svg>';
+    var ICON_OFF = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/><path d="M3 3l16 16"/></svg>';
+    function paintMus() { if (mus) { mus.innerHTML = muted ? ICON_OFF : ICON_ON; mus.setAttribute('aria-label', muted ? 'गाणे चालू करा' : 'गाणे बंद करा'); } }
+    function startMusic() {
+      if (!bgm || !S.music || S.music.auto === false) { if (bgm && mus) { mus.hidden = false; muted = true; paintMus(); } return; }
+      try { if (S.music.start > 0) bgm.currentTime = +S.music.start; } catch (e) {}
+      var p = bgm.play(); mus.hidden = false;
+      if (p && p.then) p.then(function () { playing = true; paintMus(); }, function () { muted = true; paintMus(); });
+      else { playing = true; paintMus(); }
+    }
+    if (mus) mus.onclick = function () {
+      if (muted || bgm.paused) { var p = bgm.play(); if (p && p.catch) p.catch(function () {}); muted = false; } else { bgm.pause(); muted = true; }
+      paintMus();
+    };
+    var vis = function () { if (!bgm || muted || !playing) return; if (document.hidden) bgm.pause(); else { var p = bgm.play(); if (p && p.catch) p.catch(function () {}); } };
+    document.addEventListener('visibilitychange', vis); cleanups.push(function () { document.removeEventListener('visibilitychange', vis); if (bgm) { try { bgm.pause(); } catch (e) {} } });
+
+    function openEnv() {
+      if (opened) return; opened = true; startMusic(); env.classList.add('open');
+      var wait = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 0 : 1000;
+      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); }, wait));
+    }
+    env.addEventListener('click', openEnv);
+    env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnv(); } });
+    function onScroll() { var max = document.documentElement.scrollHeight - window.innerHeight; hint.classList.toggle('off', !opened || window.scrollY > max - 120); }
+    window.addEventListener('scroll', onScroll, { passive: true }); cleanups.push(function () { window.removeEventListener('scroll', onScroll); });
+
+    var dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(S.date || ''), tm = /^(\d{2}):(\d{2})/.exec(S.time || '');
+    if ($('cd') && dm && tm) {
+      var target = new Date(+dm[1], +dm[2] - 1, +dm[3], +tm[1], +tm[2]).getTime();
+      var tick = function () {
+        var diff = target - Date.now();
+        if (diff <= 0) { $('cd').hidden = true; $('c-msg').textContent = 'आपल्या आशीर्वादाबद्दल मनःपूर्वक धन्यवाद.'; return; }
+        var s = Math.floor(diff / 1000);
+        $('c-d').textContent = N(Math.floor(s / 86400)); $('c-h').textContent = N(Math.floor(s % 86400 / 3600));
+        $('c-m').textContent = N(Math.floor(s % 3600 / 60)); $('c-s').textContent = N(s % 60);
+      };
+      tick(); timers.push(setInterval(tick, 1000));
+    }
+    if ($('r-go')) {
+      $('r-go').onclick = function () {
+        var name = $('r-name').value.trim();
+        if (!name) { $('r-err').textContent = 'कृपया आपले नाव लिहा.'; $('r-name').focus(); return; }
+        $('r-err').textContent = '';
+        var yes = document.querySelector('input[name="att"]:checked').value === 'yes';
+        var L = ['नमस्कार,', (S.type === 'engagement' ? 'साखरपुड्याच्या' : 'विवाहाच्या') + ' निमंत्रणाला उत्तर:', '', 'नाव: ' + name, yes ? 'उपस्थिती: होय, येणार' : 'उपस्थिती: क्षमस्व, येता येणार नाही'];
+        if (yes) L.push('एकूण जण: ' + N($('r-n').value || '1'));
+        if ($('r-diet').value.trim()) L.push('आहार सूचना: ' + $('r-diet').value.trim());
+        if ($('r-msg').value.trim()) L.push('', $('r-msg').value.trim());
+        var msg = L.join('\n'), p = String(S.hostPhone || '').replace(/\D/g, ''); if (p.length === 10) p = '91' + p;
+        $('r-wa').href = 'https://wa.me/' + p + '?text=' + encodeURIComponent(msg);
+        $('r-box').value = msg; $('rf').hidden = true; $('done').hidden = false; $('done').scrollIntoView({ block: 'center' });
+      };
+      $('r-cp').onclick = function () { copyText($('r-box').value, $('r-cp'), $('r-box')); };
+    }
+    if (preview) $('back').onclick = function () { enterEdit(); };
+    window.scrollTo(0, 0);
+  }
+
+  /* ======================================================================
+     EDITOR
+     ====================================================================== */
+  var toastEl = null;
+  function toast(msg) {
+    if (toastEl) toastEl.remove();
+    toastEl = document.createElement('div'); toastEl.className = 'e-toast'; toastEl.setAttribute('role', 'status'); toastEl.textContent = msg; document.body.appendChild(toastEl);
+    var el = toastEl; setTimeout(function () { if (el.parentNode) el.remove(); }, 3600);
+  }
+  function setStatus(msg, kind) { var s = $('e-status'); if (s) { s.textContent = msg; s.className = 'e-status' + (kind ? ' ' + kind : ''); } }
+  function copyText(text, btn, box) {
+    function pick() { if (box) { box.focus(); box.select(); } if (btn) btn.textContent = 'निवडले, कॉपी करा'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { if (btn) { var o = btn.getAttribute('data-t') || btn.textContent; btn.setAttribute('data-t', o); btn.textContent = 'कॉपी झाले'; setTimeout(function () { btn.textContent = o; }, 1800); } else toast('कॉपी झाले'); }, pick);
+    else pick();
+  }
+
+  /* field builders */
+  function F(label, path, o) {
+    o = o || {}; var v = get(S, path); if (v == null) v = ''; var id = 'f-' + path.replace(/\W/g, '-');
+    var inner = o.area ? '<textarea id="' + id + '" data-k="' + path + '" rows="' + (o.rows || 3) + '">' + esc(v) + '</textarea>'
+      : '<input id="' + id + '" type="' + (o.type || 'text') + '" data-k="' + path + '" value="' + esc(v) + '"' + (o.mode ? ' inputmode="' + o.mode + '"' : '') + ' autocomplete="off">';
+    return '<div class="e-f"><label for="' + id + '">' + label + '</label>' + inner + (o.hint ? '<span class="e-h">' + o.hint + '</span>' : '') + '</div>';
+  }
+  function LF(list, i, f, label, v, o) {
+    o = o || {}; var id = 'l-' + list.replace(/\W/g, '-') + '-' + i + '-' + f, attr = 'data-l="' + list + '" data-i="' + i + '" data-f="' + f + '"';
+    var inner = o.area ? '<textarea id="' + id + '" ' + attr + ' rows="2">' + esc(v) + '</textarea>' : '<input id="' + id + '" type="' + (o.type || 'text') + '" ' + attr + ' value="' + esc(v) + '" autocomplete="off">';
+    return '<div class="e-f"><label for="' + id + '">' + label + '</label>' + inner + '</div>';
+  }
+  var card = function (title, body) { return '<section class="e-card">' + (title ? '<h2>' + title + '</h2>' : '') + body + '</section>'; };
+  var row = function () { return '<div class="e-row">' + Array.prototype.join.call(arguments, '') + '</div>'; };
+  function seg(path, opts) {
+    var v = get(S, path);
+    return '<div class="e-seg" role="radiogroup">' + opts.map(function (o) { var id = 's-' + path + '-' + o[0]; return '<input type="radio" id="' + id + '" name="s-' + path + '" data-k="' + path + '" value="' + o[0] + '"' + (v === o[0] ? ' checked' : '') + '><label for="' + id + '">' + (o[2] || '') + o[1] + '</label>'; }).join('') + '</div>';
+  }
+  function chk(path, label) { return '<label class="e-chk"><input type="checkbox" data-k="' + path + '"' + (get(S, path) !== false ? ' checked' : '') + '> ' + label + '</label>'; }
+  function itemHead(list, i) {
+    return '<div class="e-item-h"><b>' + (i + 1) + '</b><button class="e-ic" type="button" data-act="up" data-l="' + list + '" data-i="' + i + '" aria-label="वर सरकवा">↑</button><button class="e-ic" type="button" data-act="down" data-l="' + list + '" data-i="' + i + '" aria-label="खाली सरकवा">↓</button><button class="e-ic" type="button" data-act="del" data-l="' + list + '" data-i="' + i + '" aria-label="काढा">✕</button></div>';
+  }
+
+  function tabHtml(k) {
+    var h = '';
+    if (k === 'basics') {
+      h += card('कार्यक्रम प्रकार', seg('type', [['wedding', 'विवाह'], ['engagement', 'साखरपुडा']]));
+      h += card('वर आणि वधू', row(F('वराचे नाव', 'groom'), F('वधूचे नाव', 'bride')) + row(F('वराचे आई-वडील', 'gpar', { hint: '‘यांचे चिरंजीव’ आपोआप लागेल' }), F('वधूचे आई-वडील', 'bpar', { hint: '‘यांची कन्या’ आपोआप लागेल' })));
+      h += card('तारीख आणि वेळ', row(F('तारीख', 'date', { type: 'date' }), F('मुहूर्ताची वेळ', 'time', { type: 'time' })) + '<span class="e-h">उलटगणती याच तारखेवरून चालते.</span>');
+      h += card('मजकूर', F('वरची छोटी ओळ', 'tagline') + F('मुख्य ओळ', 'headline') + F('लखोट्यावरील ओळ', 'envLine', { hint: 'लखोटा उघडण्यापूर्वी दिसते' }) + F('छोटा संदेश (ऐच्छिक)', 'message', { area: 1, hint: 'पहिल्या पानावर तारखेखाली दिसेल' }));
+    } else if (k === 'venue') {
+      h += card('कार्यक्रम स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
+    } else if (k === 'events') {
+      h += card('कार्यक्रमांची वेळरेषा', (S.events.length ? S.events.map(function (e, i) {
+        return '<div class="e-item">' + itemHead('events', i) + row(LF('events', i, 'time', 'वेळ', e.time), iconSel(i, e.icon)) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
+      }).join('') : '<p class="e-h">अजून कार्यक्रम नाहीत.</p>') + '<button class="e-btn" type="button" data-act="add" data-l="events">+ कार्यक्रम जोडा</button>');
+    } else if (k === 'dress') {
+      h += card('पोशाख', F('महिलांसाठी', 'dress.women') + F('पुरुषांसाठी', 'dress.men'));
+      h += card('सुचवलेले रंग', ((S.dress.colors || []).map(function (c, i) { return '<div class="e-item">' + itemHead('dress.colors', i) + row(LF('dress.colors', i, 'n', 'रंगाचे नाव', c.n), '<div class="e-f"><label for="c-' + i + '">रंग</label><input id="c-' + i + '" type="color" data-l="dress.colors" data-i="' + i + '" data-f="c" value="' + esc(c.c) + '"></div>') + '</div>'; }).join('')) + '<button class="e-btn" type="button" data-act="add" data-l="dress.colors">+ रंग जोडा</button>');
+    } else if (k === 'photos') {
+      var kb = Math.round(S.photos.reduce(function (a, p) { return a + p.length * 0.75; }, 0) / 1024);
+      h += card('फोटो गॅलरी', '<div class="e-f"><label for="ph-file">फोटो निवडा</label><input id="ph-file" type="file" accept="image/*" multiple><span class="e-h">फोटो आपोआप लहान केले जातात. जास्तीत जास्त १२ फोटो. सध्या ' + S.photos.length + ' फोटो, सुमारे ' + kb + ' KB.</span></div>' +
+        (S.photos.length ? '<div class="e-grid">' + S.photos.map(function (p, i) { return '<div class="e-ph"><img src="' + esc(p) + '" alt="फोटो ' + (i + 1) + '"><div><button class="e-ic" type="button" data-act="up" data-l="photos" data-i="' + i + '" aria-label="मागे">←</button><button class="e-ic" type="button" data-act="down" data-l="photos" data-i="' + i + '" aria-label="पुढे">→</button><button class="e-ic" type="button" data-act="del" data-l="photos" data-i="' + i + '" aria-label="काढा">✕</button></div></div>'; }).join('') + '</div>' : '<p class="e-h">अजून फोटो नाहीत. फोटो न घातल्यास गॅलरी पान दिसणार नाही.</p>'));
+    } else if (k === 'music') {
+      var m = S.music || {};
+      h += card('गाणे', '<p class="e-h" style="margin-bottom:10px">लखोटा उघडण्यासाठी पाहुण्याने टॅप केल्यावर गाणे आपोआप सुरू होईल. खाली उजवीकडे आवाज बंद-चालू करण्याचे बटण असेल.</p>' +
+        '<div class="e-f"><label for="mu-file">गाण्याची फाइल (MP3 किंवा M4A)</label><input id="mu-file" type="file" accept="audio/*"><span class="e-h">' + (CLAUDE ? 'लहान क्लिप (१–२ मिनिटे, ४ MB पर्यंत) निवडा. मोठी फाइल पानात जोडली जाईल.' : 'मोठी फाइल रेपॉझिटरीत वेगळी जतन होईल. लहान (७०० KB पर्यंत) फाइल पानातच राहील.') + '</span></div>' +
+        F('किंवा गाण्याची थेट लिंक', 'music.src', { type: 'url', mode: 'url', hint: 'सार्वजनिक .mp3 लिंक. ही Claude मधील पूर्वावलोकनात वाजणार नाही, फक्त GitHub वरील पानावर वाजेल.' }) +
+        (m.src ? '<div class="e-f"><label>सध्याचे गाणे: ' + esc(m.name || 'लिंकवरून') + '</label><audio controls src="' + esc(m.src) + '"></audio></div>' : '<p class="e-h">अजून गाणे निवडलेले नाही.</p>') +
+        F('गाणे कुठून सुरू करायचे (सेकंद)', 'music.start', { type: 'number', mode: 'numeric', hint: 'आवडता भाग थेट लावण्यासाठी. उदा. ३०' }) +
+        chk('music.auto', 'लखोटा उघडल्यावर गाणे आपोआप सुरू करा') + (m.src ? '<button class="e-btn" type="button" data-act="rmsong" style="margin-top:8px">गाणे काढा</button>' : ''));
+    } else if (k === 'faq') {
+      h += card('प्रश्न आणि उत्तरे', (S.faq.map(function (q, i) { return '<div class="e-item">' + itemHead('faq', i) + LF('faq', i, 'q', 'प्रश्न', q.q) + LF('faq', i, 'a', 'उत्तर', q.a, { area: 1 }) + '</div>'; }).join('')) + '<button class="e-btn" type="button" data-act="add" data-l="faq">+ प्रश्न जोडा</button>');
+    } else if (k === 'host') {
+      h += card('निमंत्रक', F('निमंत्रक कुटुंबाचे नाव', 'host') + F('तुमचा WhatsApp नंबर', 'hostPhone', { type: 'tel', mode: 'tel', hint: 'पाहुण्यांचे उपस्थितीचे उत्तर या नंबरवर WhatsApp ने येईल. हा नंबर पानात दिसू शकतो.' }) + F('उत्तर कळवण्याची शेवटची तारीख (ऐच्छिक)', 'rsvpBy', { hint: 'उदा. ३० नोव्हेंबर २०२६' }) + F('शेवटची ओळ', 'closing'));
+    } else if (k === 'look') {
+      h += card('रंगसंगती', '<div class="e-seg" role="radiogroup">' + Object.keys(TH).map(function (id) { var t = TH[id]; return '<input type="radio" id="th-' + id + '" name="theme" data-k="theme" value="' + id + '"' + (S.theme === id ? ' checked' : '') + '><label for="th-' + id + '"><span class="e-sw" style="background:linear-gradient(135deg,' + t.paper + ' 55%,' + t.accent + ' 55%)"></span>' + t.n + '</label>'; }).join('') + '</div>');
+      h += card('अंक', seg('digits', [['mr', 'मराठी (०१२३)'], ['en', 'इंग्रजी (0123)']]));
+      h += card('कोणती पाने दाखवायची', chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'कार्यक्रम स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी') + chk('show.faq', 'प्रश्न-उत्तर') + chk('show.rsvp', 'उपस्थितीचा फॉर्म'));
+    } else if (k === 'share') {
+      h += shareHtml();
+    }
+    return h;
+  }
+  function iconSel(i, cur) {
+    return '<div class="e-f"><label for="l-events-' + i + '-icon">चिन्ह</label><select id="l-events-' + i + '-icon" data-l="events" data-i="' + i + '" data-f="icon">' + Object.keys(ICONS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + ICONS[k] + '</option>'; }).join('') + '</select></div>';
+  }
+
+  function baseUrl() { var u = (S.shareUrl || '').trim(); if (!u && !CLAUDE) u = location.origin + location.pathname.replace(/index\.html$/, ''); return u.replace(/#.*$/, ''); }
+  function guestLink(g) { var b = baseUrl(); return b ? b + '#' + g.id : ''; }
+  function guestMsg(g) {
+    var couple = (S.groom || '') + ' आणि ' + (S.bride || ''), ev = S.type === 'engagement' ? 'साखरपुड्याचे' : 'विवाहाचे';
+    return 'नमस्कार ' + g.name + ',\n' + couple + ' यांच्या ' + ev + ' निमंत्रणासाठी कृपया ही लिंक उघडा:\n' + guestLink(g) + (S.host ? '\n\nआपले नम्र,\n' + S.host : '');
+  }
+  function waHref(g) {
+    var l = guestLink(g); if (!l) return '#';
+    var p = String(phones()[g.id] || '').replace(/\D/g, ''); if (p.length === 10) p = '91' + p;
+    return 'https://wa.me/' + p + '?text=' + encodeURIComponent(guestMsg(g));
+  }
+  function refreshLinks() {
+    Array.prototype.forEach.call(document.querySelectorAll('a[data-wa]'), function (a) {
+      var g = S.guests.filter(function (x) { return x.id === a.getAttribute('data-wa'); })[0]; if (!g) return;
+      var h = waHref(g); a.href = h; a.setAttribute('aria-disabled', h === '#' ? 'true' : 'false');
+    });
+    var gl = $('gen-link'); if (gl) gl.textContent = baseUrl() || '—';
+  }
+
+  function shareHtml() {
+    var h = '', c = ghCfg(), P = phones();
+    if (CLAUDE) {
+      h += card('पाहुण्यांसाठी लिंक कशी बनवायची', '<p class="e-h" style="margin-bottom:10px">तुमच्या सध्याच्या प्लॅनवर Claude मधील हे पान फक्त तुम्हालाच दिसते. पाहुण्यांसाठी निमंत्रण GitHub Pages वर ठेवा. ते मोफत आहे.</p>' +
+        '<ol class="e-steps"><li>github.com वर लॉगिन करून नवीन <b>public</b> रेपॉझिटरी बनवा. नाव उदा. <code>invite</code>.</li><li>खालील बटणाने <code>index.html</code> फाइल डाउनलोड करा.</li><li>रेपॉझिटरीत <b>Add file → Upload files</b> मधून ती फाइल टाका आणि Commit करा.</li><li><b>Settings → Pages</b> मध्ये Branch <code>main</code>, folder <code>/ (root)</code> निवडा आणि Save करा.</li><li>१-२ मिनिटांत तुमची लिंक तयार: <code>https://युजरनेम.github.io/invite/</code></li><li>त्या लिंकच्या शेवटी <code>#edit</code> लावून एडिटर उघडा. तिथून बदल थेट GitHub वर जतन होतात.</li></ol>' +
+        '<div style="margin-top:12px"><button class="e-btn p" type="button" data-act="export">GitHub साठी फाइल डाउनलोड करा</button></div>');
+    } else {
+      h += card('GitHub वर जतन करण्याची सेटिंग', '<p class="e-h" style="margin-bottom:10px">‘प्रकाशित करा’ दाबल्यावर पान या रेपॉझिटरीत जतन होते. बदल दिसायला १-२ मिनिटे लागतात.</p>' +
+        row(F2('gh-owner', 'GitHub युजरनेम', c.owner, 'text'), F2('gh-repo', 'रेपॉझिटरीचे नाव', c.repo, 'text')) +
+        F2('gh-token', 'Access token', c.token, 'password', 'फक्त याच ब्राउझरमध्ये राहतो. GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate. Repository access: फक्त ही रेपॉझिटरी. Permissions → Contents: Read and write.') +
+        '<details><summary class="e-h" style="cursor:pointer">अधिक सेटिंग</summary><div style="margin-top:10px">' + row(F2('gh-branch', 'Branch (रिकामे = main)', c.branch, 'text'), F2('gh-path', 'फाइलचे नाव', c.path, 'text')) + '</div></details>');
+    }
+    h += card('निमंत्रणाची मुख्य लिंक', '<div class="e-f"><label for="f-shareUrl">तुमच्या निमंत्रणाची लिंक</label><input id="f-shareUrl" type="url" data-k="shareUrl" value="' + esc(S.shareUrl || '') + '" inputmode="url" autocomplete="off" placeholder="https://युजरनेम.github.io/invite/"><span class="e-h">GitHub Pages ची लिंक येथे टाका. प्रत्येक पाहुण्याची वेगळी लिंक याच्या शेवटी नाव लावून बनते.</span></div>' +
+      '<div class="e-h">सर्वांसाठी लिंक: <b id="gen-link" style="overflow-wrap:anywhere">' + esc(baseUrl() || '—') + '</b></div>');
+    h += card('पाहुण्यांची यादी', '<p class="e-h" style="margin-bottom:10px">पाहुण्याचे नाव त्याच्या लिंकवर लखोट्यावर आणि उपस्थितीच्या फॉर्ममध्ये दिसते. मोबाईल नंबर फक्त या ब्राउझरमध्ये राहतात, पानात प्रकाशित होत नाहीत.</p>' +
+      (S.guests.length ? S.guests.map(function (g, i) {
+        return '<div class="e-guest"><div class="e-f"><label for="g-n-' + i + '">नाव</label><input id="g-n-' + i + '" type="text" data-l="guests" data-i="' + i + '" data-f="name" value="' + esc(g.name) + '" autocomplete="off"></div>' +
+          '<div class="e-f"><label for="g-p-' + i + '">मोबाईल</label><input id="g-p-' + i + '" type="tel" inputmode="tel" data-gp="' + esc(g.id) + '" value="' + esc(P[g.id] || '') + '" autocomplete="off"></div>' +
+          '<div class="e-g-act"><a class="e-btn wa s" target="_blank" rel="noopener" data-wa="' + esc(g.id) + '" href="' + esc(waHref(g)) + '">WhatsApp वर पाठवा</a><button class="e-btn s" type="button" data-act="copylink" data-id="' + esc(g.id) + '">लिंक कॉपी करा</button><button class="e-btn s" type="button" data-act="del" data-l="guests" data-i="' + i + '">काढा</button></div></div>';
+      }).join('') : '<p class="e-h">अजून पाहुणे नाहीत.</p>') +
+      '<div class="e-f" style="margin-top:12px"><label for="g-bulk">एकत्र जोडा</label><textarea id="g-bulk" rows="4" placeholder="श्री. शर्मा परिवार, 9876500001&#10;सौ. व श्री. जोशी, 9876500002"></textarea><span class="e-h">प्रत्येक ओळीत: नाव, मोबाईल नंबर</span></div><button class="e-btn" type="button" data-act="addguests">यादीत जोडा</button>');
+    return h;
+  }
+  function F2(id, label, v, type, hint) { return '<div class="e-f"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" data-gh="' + id.replace('gh-', '') + '" value="' + esc(v) + '" autocomplete="off">' + (hint ? '<span class="e-h">' + hint + '</span>' : '') + '</div>'; }
+
+  var draftNote = '';
+  function editorShell() {
+    return '<div class="e-wrap"><header class="e-top"><div class="e-brand">मंगल निमंत्रण स्टुडिओ</div><div class="e-act"><span class="e-status" id="e-status" role="status"></span><button class="e-btn" type="button" data-act="preview">पूर्वावलोकन</button><button class="e-btn p" type="button" data-act="publish" id="e-pub">' + (CLAUDE ? 'जतन करा' : 'GitHub वर प्रकाशित करा') + '</button></div></header>' +
+      '<div id="e-notes"></div><div class="e-body"><nav class="e-nav" id="e-nav" role="tablist" aria-label="विभाग"></nav><main class="e-main" id="e-main"></main></div></div>';
+  }
+  function renderNotes() {
+    var h = '';
+    if (S.sample) h += '<div class="e-note"><span>सध्या नमुना माहिती भरलेली आहे. तुमची माहिती भरण्यासाठी हे पुसा किंवा प्रत्येक विभागात बदल करा.</span><button class="e-btn s" type="button" data-act="clear">नमुना पुसा</button></div>';
+    if (draftNote) h += '<div class="e-note"><span>या ब्राउझरमध्ये जतन न केलेला मसुदा सापडला.</span><span style="flex:0 0 auto;display:flex;gap:8px"><button class="e-btn s" type="button" data-act="draftyes">पुनर्स्थापित करा</button><button class="e-btn s" type="button" data-act="draftno">टाका</button></span></div>';
+    $('e-notes').innerHTML = h;
+  }
+  function renderNav() {
+    $('e-nav').innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-act="tab" data-t="' + t[0] + '" aria-selected="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join('');
+  }
+  function renderTab() { renderNav(); $('e-main').innerHTML = tabHtml(tab); if (tab === 'share') refreshLinks(); }
+
+  function enterEdit() {
+    leaveAll(); mode = 'edit'; document.body.className = 'm-edit';
+    var d = ls.get('mn-draft'); draftNote = (d && !dirty) ? d : '';
+    root.innerHTML = editorShell(); renderNotes(); renderTab(); window.scrollTo(0, 0);
+    try { if (sessionStorage.getItem('mn-done')) { sessionStorage.removeItem('mn-done'); setStatus('जतन झाले ✓', 'ok'); } } catch (e) {}
+    if (dirty) setStatus('जतन न केलेले बदल आहेत');
+  }
+  function markDirty() {
+    dirty = true; setStatus('जतन न केलेले बदल आहेत');
+    clearTimeout(draftTimer); draftTimer = setTimeout(function () { ls.set('mn-draft', JSON.stringify(S)); }, 700);
+  }
+
+  /* ---- editor events (delegated on root) ---- */
+  root.addEventListener('input', function (e) { if (mode === 'edit') onField(e.target, false); });
+  root.addEventListener('change', function (e) { if (mode === 'edit') onField(e.target, true); });
+  function onField(t, isChange) {
+    if (t.id === 'ph-file' || t.id === 'mu-file') { if (isChange) (t.id === 'ph-file' ? addPhotos(t.files) : addSong(t.files && t.files[0])); return; }
+    if (t.dataset.gh) { var s = ghStore(); s[t.dataset.gh] = t.value.trim(); ls.set('mn-gh', JSON.stringify(s)); return; }
+    if (t.dataset.gp) { var P = phones(); P[t.dataset.gp] = t.value.trim(); savePhones(P); refreshLinks(); return; }
+    if (t.dataset.l) {
+      var arr = get(S, t.dataset.l), it = arr && arr[+t.dataset.i]; if (!it) return;
+      it[t.dataset.f] = t.value; markDirty(); if (t.dataset.l === 'guests') refreshLinks(); return;
+    }
+    if (t.dataset.k) {
+      var k = t.dataset.k, v;
+      if (t.type === 'checkbox') v = t.checked; else if (t.type === 'radio') { if (!t.checked) return; v = t.value; } else if (t.type === 'number') v = Number(t.value) || 0; else v = t.value;
+      if (k === 'type') {
+        var old = S.type; set(S, k, v);
+        if (S.headline === HEAD[old]) S.headline = HEAD[v]; if (S.envLine === ENVL[old]) S.envLine = ENVL[v];
+        markDirty(); renderTab(); return;
+      }
+      if (k === 'music.src') { S.music.name = ''; S.music.size = 0; }
+      set(S, k, v); markDirty(); if (k === 'shareUrl') refreshLinks();
+    }
+  }
+  root.addEventListener('click', function (e) {
+    if (mode !== 'edit') return;
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var act = b.dataset.act, l = b.dataset.l, i = +b.dataset.i;
+    if (act === 'tab') { tab = b.dataset.t; renderTab(); window.scrollTo(0, 0); }
+    else if (act === 'preview') enterView(true);
+    else if (act === 'publish') doPublish();
+    else if (act === 'add') {
+      var arr = get(S, l), nw = { events: { time: '', t: '', d: '', icon: 'flower' }, 'dress.colors': { n: '', c: '#c9a24a' }, faq: { q: '', a: '' } }[l];
+      arr.push(nw); markDirty(); renderTab();
+    } else if (act === 'del' || act === 'up' || act === 'down') {
+      var a = get(S, l), j = act === 'up' ? i - 1 : act === 'down' ? i + 1 : i;
+      if (act === 'del') a.splice(i, 1); else if (j >= 0 && j < a.length) { var tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+      markDirty(); renderTab();
+    } else if (act === 'clear') {
+      ['groom', 'bride', 'gpar', 'bpar', 'date', 'time', 'venue', 'addr', 'map', 'host', 'hostPhone', 'message'].forEach(function (k) { S[k] = ''; });
+      S.events = []; S.faq = []; S.photos = []; S.guests = []; S.dress = { women: '', men: '', colors: [] }; S.sample = false;
+      markDirty(); renderNotes(); renderTab();
+    } else if (act === 'draftyes') { try { S = Object.assign(clone(DEF), JSON.parse(ls.get('mn-draft'))); } catch (x) {} draftNote = ''; dirty = true; renderNotes(); renderTab(); setStatus('मसुदा परत आणला'); }
+    else if (act === 'draftno') { ls.del('mn-draft'); draftNote = ''; renderNotes(); }
+    else if (act === 'rmsong') { S.music.src = ''; S.music.name = ''; S.music.size = 0; markDirty(); renderTab(); }
+    else if (act === 'addguests') {
+      var box = $('g-bulk'), lines = box.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean), P = phones();
+      lines.forEach(function (ln) { var p = ln.split(/[,\t]/), nm = p.shift().trim(); if (!nm) return; var id = 'g' + Math.random().toString(36).slice(2, 7); S.guests.push({ id: id, name: nm }); var ph = p.join('').trim(); if (ph) P[id] = ph; });
+      savePhones(P); box.value = ''; markDirty(); renderTab();
+    } else if (act === 'copylink') {
+      var g = S.guests.filter(function (x) { return x.id === b.dataset.id; })[0]; if (!g) return;
+      var lk = guestLink(g); if (!lk) { toast('आधी निमंत्रणाची मुख्य लिंक भरा'); return; } copyText(lk, b);
+    } else if (act === 'export') exportFile();
+  });
+  root.addEventListener('click', function (e) { var a = e.target.closest('a[data-wa]'); if (a && a.getAttribute('aria-disabled') === 'true') { e.preventDefault(); toast('आधी निमंत्रणाची मुख्य लिंक भरा'); } });
+
+  /* ---- photos & song ---- */
+  function shrink(file) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        var M = 900, k = Math.min(1, M / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+        c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.78));
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); rej(); }; im.src = url;
+    });
+  }
+  function addPhotos(files) {
+    var list = Array.prototype.slice.call(files || []).slice(0, Math.max(0, 12 - S.photos.length));
+    if (!list.length) { toast('जास्तीत जास्त १२ फोटो'); return; }
+    setStatus('फोटो तयार होत आहेत…');
+    Promise.all(list.map(function (f) { return shrink(f).catch(function () { return null; }); })).then(function (r) {
+      r.forEach(function (u) { if (u) S.photos.push(u); }); markDirty(); renderTab();
+    });
+  }
+  function addSong(file) {
+    if (!file) return;
+    if (file.type && file.type.indexOf('audio') !== 0) { toast('कृपया गाण्याची (audio) फाइल निवडा'); return; }
+    if (CLAUDE && file.size > 6 * 1024 * 1024) { toast('फाइल मोठी आहे. ४ MB पेक्षा लहान क्लिप निवडा.'); return; }
+    var fr = new FileReader(); setStatus('गाणे जोडत आहे…');
+    fr.onload = function () { S.music.src = fr.result; S.music.name = file.name; S.music.size = file.size; markDirty(); renderTab(); };
+    fr.onerror = function () { toast('गाणे वाचता आले नाही'); };
+    fr.readAsDataURL(file);
+  }
+
+  /* ---- build + save ---- */
+  function buildDoc(web) {
+    var names = esc((S.groom || '') + ' आणि ' + (S.bride || ''));
+    var data = JSON.stringify(S).replace(/</g, '\\u003c');
+    var css = $('css').textContent, app = $('app').textContent;
+    var fl = '<link rel="stylesheet" href="' + FONTS + '">';
+    var tail = '<div id="root"></div><script type="application/json" id="inv-data">' + data + END + '<script id="app">' + app + END;
+    if (web) {
+      var og = '<meta property="og:title" content="' + names + '"><meta property="og:description" content="' + (S.type === 'engagement' ? 'साखरपुड्याचे निमंत्रण' : 'विवाह निमंत्रण') + '. उघडण्यासाठी टॅप करा."><meta property="og:type" content="website">';
+      return '<!doctype html><html lang="mr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + names + '</title>' + og + fl + '<style id="css">' + css + '</style></head><body>' + tail + '</body></html>';
+    }
+    return SKEL + '\n<title>' + names + '</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n' + fl + '\n<style id="css">' + css + '</style>\n' + tail + '\n</body></html>';
+  }
+  function b64s(str) { var b = new TextEncoder().encode(str), s = '', n = 0x8000; for (var i = 0; i < b.length; i += n) s += String.fromCharCode.apply(null, b.subarray(i, i + n)); return btoa(s); }
+  function ghErr(r, j) { var e = new Error((j && j.message) || ('HTTP ' + r.status)); e.code = r.status; return e; }
+  async function ghPut(path, b64, msg) {
+    var c = ghCfg(); if (!c.token || !c.owner || !c.repo) { var e0 = new Error('setup'); e0.code = 'gh_setup'; throw e0; }
+    var H = { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    var base = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo), br = c.branch;
+    if (!br) { var r0 = await fetch(base, { headers: H }); if (!r0.ok) throw ghErr(r0, await r0.json().catch(function () { return {}; })); br = (await r0.json()).default_branch || 'main'; }
+    var url = base + '/contents/' + path.split('/').map(encodeURIComponent).join('/'), body = { message: msg, content: b64, branch: br };
+    var g = await fetch(url + '?ref=' + encodeURIComponent(br), { headers: H });
+    if (g.status === 200) body.sha = (await g.json()).sha; else if (g.status !== 404) throw ghErr(g, await g.json().catch(function () { return {}; }));
+    var p = await fetch(url, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify(body) });
+    if (!p.ok) throw ghErr(p, await p.json().catch(function () { return {}; }));
+  }
+  async function hostSong() {
+    var m = S.music; if (!m || !m.src || m.src.indexOf('data:') !== 0 || (m.size && m.size < 700000)) return;
+    var mm = /^data:([^;]+);base64,(.*)$/.exec(m.src); if (!mm) return;
+    var ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav' })[mm[1]] || 'mp3';
+    var name = 'music.' + ext; await ghPut(name, mm[2], 'गाणे अद्ययावत'); m.src = name + '?v=' + Date.now().toString(36);
+  }
+  function validate() {
+    if (!(S.groom || '').trim() || !(S.bride || '').trim()) { tab = 'basics'; renderTab(); return 'आधी वर आणि वधूची नावे भरा.'; }
+    return '';
+  }
+  function showErr(e) {
+    var c = e && e.code, m = 'जतन झाले नाही. पुन्हा प्रयत्न करा.';
+    if (c === 'conflict') m = 'दुसऱ्या ठिकाणी बदल झाला होता. पान पुन्हा लोड होत आहे.';
+    else if (c === 'not_writer' || c === 'not_granted' || c === 'not_declared') m = 'या पानात बदल जतन करण्याची परवानगी नाही.';
+    else if (c === 'too_large') m = 'पान खूप मोठे झाले आहे. फोटो किंवा गाणे कमी करा.';
+    else if (c === 'rate_limited') m = 'थोडा वेळ थांबून पुन्हा प्रयत्न करा.';
+    else if (c === 'gh_setup') { m = 'आधी GitHub ची सेटिंग भरा (पाठवा विभाग).'; tab = 'share'; renderTab(); }
+    else if (c === 401) m = 'GitHub token चुकीचा किंवा कालबाह्य आहे.';
+    else if (c === 403) m = 'या token ला ही रेपॉझिटरी बदलण्याची परवानगी नाही.';
+    else if (c === 404) m = 'रेपॉझिटरी सापडली नाही. युजरनेम आणि नाव तपासा.';
+    else if (c === 422) m = 'GitHub ने फाइल स्वीकारली नाही. Branch आणि फाइलचे नाव तपासा.';
+    else if (e && e.name === 'TypeError') m = 'इंटरनेट किंवा GitHub शी संपर्क झाला नाही.';
+    setStatus(m, 'bad'); toast(m);
+  }
+  async function doPublish() {
+    if (busy) return; var er = validate(); if (er) { toast(er); return; }
+    busy = true; $('e-pub').disabled = true; setStatus('जतन होत आहे…');
+    try {
+      S.sample = false;
+      if (CLAUDE) {
+        var a = await CLAUDE.use('artifact'); if (!a) { var ee = new Error('x'); ee.code = 'not_granted'; throw ee; }
+        await a.publish(buildDoc(false)); try { sessionStorage.setItem('mn-done', '1'); } catch (x) {}
+      } else {
+        await hostSong();
+        await ghPut(ghCfg().path || 'index.html', b64s(buildDoc(true)), 'निमंत्रण अद्ययावत');
+        setStatus('GitHub वर जतन झाले ✓', 'ok'); toast('जतन झाले. बदल दिसायला १-२ मिनिटे लागतात.');
+      }
+      dirty = false; ls.del('mn-draft'); renderNotes();
+    } catch (e) { showErr(e); }
+    busy = false; var pb = $('e-pub'); if (pb) pb.disabled = false;
+  }
+  async function exportFile() {
+    var er = validate(); if (er) { toast(er); return; }
+    var d = CLAUDE ? await CLAUDE.use('downloads') : null;
+    if (!d) { toast('इथे डाउनलोड शक्य नाही'); return; }
+    try { await d.save({ filename: 'index.html', data: buildDoc(true) }); toast('फाइल जतन झाली'); }
+    catch (e) { if (!e || e.code !== 'declined') toast('डाउनलोड झाले नाही'); }
+  }
+})();
+</script></body></html>

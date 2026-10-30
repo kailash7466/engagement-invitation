@@ -91,10 +91,10 @@ audio { width: 100%; margin-top: 8px; }
 html.vmode { scroll-snap-type: y proximity; scroll-behavior: smooth; }
 html.locked { overflow: hidden; }
 body.m-view { background: var(--paper); color: var(--ink); font-family: var(--script); font-size: 17px; line-height: 1.7; overflow-x: hidden; }
-.col { max-width: var(--colw); margin: 0 auto; position: relative; z-index: 1; }
+.col { position: relative; z-index: 1; }
 body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--paper)); background-attachment: fixed; }
 .pg { position: relative; min-height: 100vh; min-height: 100svh; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px;
-  padding-block: 64px 96px; padding-left: max(58px, env(safe-area-inset-left, 0px)); padding-right: max(58px, env(safe-area-inset-right, 0px)); }
+  padding-block: 64px 96px; padding-left: max(58px, env(safe-area-inset-left, 0px), calc((100% - var(--colw)) / 2 + 58px)); padding-right: max(58px, env(safe-area-inset-right, 0px), calc((100% - var(--colw)) / 2 + 58px)); }
 .pg > * { position: relative; z-index: 1; max-width: 100%; min-width: 0; }
 .flora { position: fixed; top: 0; bottom: 0; width: 56px; z-index: 0; pointer-events: none; }
 .flora svg { width: 100%; height: 100%; display: block; }
@@ -189,6 +189,22 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .tag { position: fixed; left: max(8px, env(safe-area-inset-left, 0px)); top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 120; font: 600 12px system-ui, sans-serif; background: var(--wine); color: var(--wine-fg); padding: 3px 9px; border-radius: 3px; }
 .back { position: fixed; right: max(10px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 130; font: 700 14px var(--ui); background: var(--wine); color: var(--wine-fg); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
 .mus { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 40; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--wine); background: var(--card); color: var(--wine); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.bgfix, .bgov { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.bgfix { background-image: var(--bg-d, none); background-size: cover; background-position: center var(--bgpos, center); background-repeat: no-repeat; }
+.bgov { background: var(--ovc, transparent); }
+.pg.cov { background-image: linear-gradient(var(--ovc, transparent), var(--ovc, transparent)), var(--cv-d); background-size: cover; background-position: center var(--bgpos, center); background-repeat: no-repeat; }
+.flora.has { background-image: var(--ed); background-repeat: repeat-y; background-size: 100% auto; background-position: top center; }
+.venue-img { width: min(100%, 320px); aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; border: 2px solid var(--gold); display: block; }
+.couple { width: min(44%, 170px); }
+#env.hasimg .fl { background: linear-gradient(var(--ovc2, transparent), var(--ovc2, transparent)), var(--ev-d) center / cover no-repeat; }
+#env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
+@media (max-width: 700px) {
+  .bgfix { background-image: var(--bg-m, var(--bg-d, none)); }
+  .pg.cov { background-image: linear-gradient(var(--ovc, transparent), var(--ovc, transparent)), var(--cv-m, var(--cv-d)); }
+  #env.hasimg .fl { background: linear-gradient(var(--ovc2, transparent), var(--ovc2, transparent)), var(--ev-m, var(--ev-d)) center / cover no-repeat; }
+}
+.e-imgprev { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.e-imgprev img { max-width: 160px; max-height: 120px; border-radius: 8px; border: 1px solid var(--e-line); object-fit: cover; background: repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
 @media (prefers-reduced-motion: reduce) {
   html.vmode { scroll-behavior: auto; }
   .mouse::after, #env .seal, .go .rise > * { animation: none; }
@@ -232,6 +248,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     ],
     dress: { women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
     photos: [],
+    img: {},
+    bgx: { overlay: 30, pos: 'center' },
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     faq: [],
     host: 'देशमुख व कुलकर्णी परिवार', hostPhone: '9876543210', rsvpBy: '', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
@@ -285,7 +303,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   /* ---------------- state ---------------- */
   var mode = 'boot', tab = 'basics', dirty = false, busy = false, draftTimer = 0;
   var timers = [], cleanups = [];
-  var TABS = [['basics', 'मुख्य माहिती'], ['venue', 'स्थळ'], ['events', 'कार्यक्रम'], ['dress', 'पोशाख'], ['photos', 'फोटो'], ['music', 'गाणे'], ['host', 'निमंत्रक'], ['look', 'रंग आणि पाने'], ['share', 'पाठवा']];
+  var TABS = [['basics', 'मुख्य माहिती'], ['venue', 'स्थळ'], ['events', 'कार्यक्रम'], ['dress', 'पोशाख'], ['photos', 'फोटो'], ['music', 'गाणे'], ['host', 'निमंत्रक'], ['look', 'रंग आणि पाने'], ['images', 'पार्श्वभूमी व चित्रे'], ['share', 'पाठवा']];
 
   /* ---------------- boot ---------------- */
   function decideEditor() {
@@ -354,13 +372,23 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var sl = (location.hash || '').replace('#', ''), gn = '';
     (S.guests || []).forEach(function (g) { if (g.id === sl) gn = g.name; });
     var mapUrl = S.map || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(((S.venue || '') + ' ' + (S.addr || '')).trim()));
-    var h = '<div id="vw">';
-    h += '<div id="env" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
+    var IM = S.img || {}, BX = S.bgx || {}, ov = Math.max(0, Math.min(90, +BX.overlay || 0)), vs = [];
+    var cssUrl = function (u) { return "url('" + String(u).replace(/'/g, '%27').replace(/"/g, '%22') + "')"; };
+    var setImg = function (pre, o) { if (o && o.d) { vs.push('--' + pre + '-d:' + cssUrl(o.d)); if (o.m) vs.push('--' + pre + '-m:' + cssUrl(o.m)); } };
+    setImg('bg', IM.bg); setImg('cv', IM.coverbg); setImg('ev', IM.envbg);
+    var hasEdge = !!(IM.edge && IM.edge.d); if (hasEdge) vs.push('--ed:' + cssUrl(IM.edge.d));
+    vs.push('--ovc:' + hexA(t.paper, ov / 100)); vs.push('--ovc2:' + hexA(t.paper, 0.18));
+    vs.push('--bgpos:' + (['top', 'center', 'bottom'].indexOf(BX.pos) >= 0 ? BX.pos : 'center'));
+    var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
+    var h = '<div id="vw" style="' + esc(vs.join(';')) + '">';
+    if (IM.bg && IM.bg.d) h += '<div class="bgfix"></div><div class="bgov"></div>';
+    h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
       '<svg class="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="' + t.gold + '" fill="none" stroke-width="1" vector-effect="non-scaling-stroke"><path d="M0 0L50 50L100 0M0 100L50 50L100 100M0 0L50 50L0 100M100 0L50 50L100 100" vector-effect="non-scaling-stroke"/></g></svg>' +
       '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div>' + sealSvg(t) + '<div class="tap">उघडण्यासाठी टॅप करा</div></div>';
-    h += '<div class="flora l">' + floraSvg(t) + '</div><div class="flora r">' + floraSvg(t) + '</div><div class="col" id="col">';
+    h += '<div class="flora l' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="flora r' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="col" id="col">';
 
-    h += '<section class="pg"><div class="rise" style="display:contents">' +
+    h += '<section class="pg' + (hasCv ? ' cov' : '') + '"><div class="rise" style="display:contents">' +
+      (IM.couple && IM.couple.d ? '<div class="oval couple"><img src="' + esc(IM.couple.d) + '" alt=""></div>' : '') +
       (S.tagline ? '<p class="kick">' + esc(N(S.tagline)) + '</p>' : '<span></span>') + '<h2 class="t2 script">' + esc(N(S.headline)) + '</h2>' +
       '<h1 class="t1 script" style="margin:0">' + esc(N(S.groom)) + '</h1><div class="script" style="font-size:1.5rem">आणि</div><h1 class="t1 script" style="margin:0">' + esc(N(S.bride)) + '</h1>' +
       '<div class="rule"></div>' + (dtxt ? '<div class="datel">' + esc(dtxt) + '</div>' : '') + (S.message ? '<p class="sub">' + esc(N(S.message)) + '</p>' : '') + '</div></section>';
@@ -374,7 +402,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     }
     if (sh.venue !== false && (S.venue || S.addr)) {
       h += '<section class="pg"><h2 class="t1 script">कार्यक्रम स्थळ</h2>' +
-        '<svg class="venue-art" viewBox="0 0 270 190" aria-hidden="true"><g fill="none" stroke="' + t.blue + '" stroke-width="1.4" stroke-linejoin="round"><path d="M20 170h230" stroke="' + t.gold + '"/><path d="M40 170V92h40v78M190 170V92h40v78M80 170V70h110v100" fill="' + hexA(t.rose, .5) + '"/><path d="M112 70V40l23-22 23 22v30" fill="' + hexA(t.rose, .7) + '"/><path d="M135 18v-8M131 12h8" stroke="' + t.gold + '"/><path d="M120 170v-44a15 15 0 0 1 30 0v44" fill="' + hexA(t.gold, .35) + '"/><path d="M96 98h14M160 98h14M96 122h14M160 122h14"/><path d="M40 92l20-18 20 18M190 92l20-18 20 18"/><path d="M105 170v6h60v-6M95 176v6h80v-6" stroke="' + t.gold + '"/><circle cx="22" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M22 154v16"/><circle cx="248" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M248 154v16"/></g></svg>' +
+        (IM.venue && IM.venue.d ? '<img class="venue-img" src="' + esc(IM.venue.d) + '" alt="">' : '<svg class="venue-art" viewBox="0 0 270 190" aria-hidden="true"><g fill="none" stroke="' + t.blue + '" stroke-width="1.4" stroke-linejoin="round"><path d="M20 170h230" stroke="' + t.gold + '"/><path d="M40 170V92h40v78M190 170V92h40v78M80 170V70h110v100" fill="' + hexA(t.rose, .5) + '"/><path d="M112 70V40l23-22 23 22v30" fill="' + hexA(t.rose, .7) + '"/><path d="M135 18v-8M131 12h8" stroke="' + t.gold + '"/><path d="M120 170v-44a15 15 0 0 1 30 0v44" fill="' + hexA(t.gold, .35) + '"/><path d="M96 98h14M160 98h14M96 122h14M160 122h14"/><path d="M40 92l20-18 20 18M190 92l20-18 20 18"/><path d="M105 170v6h60v-6M95 176v6h80v-6" stroke="' + t.gold + '"/><circle cx="22" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M22 154v16"/><circle cx="248" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M248 154v16"/></g></svg>') +
         '<div class="pin"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="' + t.accent + '" stroke-width="1.6"><path d="M9 16s5-4.6 5-8.5a5 5 0 0 0-10 0C4 11.4 9 16 9 16z"/><circle cx="9" cy="7.5" r="1.8"/></svg></div>' +
         (S.venue ? '<h3 class="t2 script" style="margin:0">' + esc(N(S.venue)) + '</h3>' : '') + (S.addr ? '<p class="sub">' + esc(N(S.addr)) + '</p>' : '') +
         '<a class="dir" href="' + esc(mapUrl) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="' + t.blue + '" stroke-width="1.6" stroke-linejoin="round"><path d="M3 10l16-7-7 16-2-7z"/></svg><span><b>दिशा मिळवा</b><small>Google Maps मध्ये उघडा</small></span></a></section>';
@@ -538,6 +566,22 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       var kb = Math.round(S.photos.reduce(function (a, p) { return a + p.length * 0.75; }, 0) / 1024);
       h += card('फोटो गॅलरी', '<div class="e-f"><label for="ph-file">फोटो निवडा</label><input id="ph-file" type="file" accept="image/*" multiple><span class="e-h">फोटो आपोआप लहान केले जातात. जास्तीत जास्त १२ फोटो. सध्या ' + S.photos.length + ' फोटो, सुमारे ' + kb + ' KB.</span></div>' +
         (S.photos.length ? '<div class="e-grid">' + S.photos.map(function (p, i) { return '<div class="e-ph"><img src="' + esc(p) + '" alt="फोटो ' + (i + 1) + '"><div><button class="e-ic" type="button" data-act="up" data-l="photos" data-i="' + i + '" aria-label="मागे">←</button><button class="e-ic" type="button" data-act="down" data-l="photos" data-i="' + i + '" aria-label="पुढे">→</button><button class="e-ic" type="button" data-act="del" data-l="photos" data-i="' + i + '" aria-label="काढा">✕</button></div></div>'; }).join('') + '</div>' : '<p class="e-h">अजून फोटो नाहीत. फोटो न घातल्यास गॅलरी पान दिसणार नाही.</p>'));
+    } else if (k === 'images') {
+      var IMG = S.img || {}, BX2 = S.bgx || {};
+      var slot = function (key, title, hint, png) {
+        var o = IMG[key];
+        return card(title, '<p class="e-h" style="margin-bottom:10px">' + hint + '</p><div class="e-f"><label for="im-' + key + '">फोटो निवडा</label><input id="im-' + key + '" type="file" accept="' + (png ? 'image/png,image/webp' : 'image/*') + '" data-img="' + key + '"></div>' +
+          (o && o.d ? '<div class="e-imgprev"><img src="' + esc(o.d) + '" alt="">' + (o.m ? '<span class="e-h">मोबाईलसाठी उभी प्रत आपोआप बनली</span>' : '') + '<button class="e-btn s" type="button" data-act="rmimg" data-k="' + key + '">काढा</button></div>' : '<p class="e-h">अजून निवडलेले नाही.</p>'));
+      };
+      h += slot('bg', 'सर्व पानांची पार्श्वभूमी', 'कोणताही फोटो चालेल. संगणकासाठी मोठी आणि मोबाईलसाठी उभी प्रत आपोआप बनते, तुम्हाला आकार बदलावा लागत नाही.');
+      h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
+        '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
+      h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
+      h += slot('envbg', 'लखोट्याची पार्श्वभूमी (ऐच्छिक)', 'लखोटा बंद असताना दिसणारा फोटो.');
+      h += slot('couple', 'जोडप्याचा फोटो (ऐच्छिक)', 'पहिल्या पानावर नावांच्या वर अंडाकृती चौकटीत दिसतो.');
+      h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'कार्यक्रम स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
+      h += slot('edge', 'बाजूची सजावट (ऐच्छिक)', 'पारदर्शक PNG, उभ्या पट्टीसारखी (उदा. १२० × ६०० px). ती दोन्ही बाजूंना वर-खाली पुन्हा पुन्हा लागते.', true);
+      h += card('गॅलरीचे फोटो', '<p class="e-h">गॅलरीचे फोटो ‘फोटो’ विभागात जोडा.</p>');
     } else if (k === 'music') {
       var m = S.music || {};
       h += card('गाणे', '<p class="e-h" style="margin-bottom:10px">लखोटा उघडण्यासाठी पाहुण्याने टॅप केल्यावर गाणे आपोआप सुरू होईल. खाली उजवीकडे आवाज बंद-चालू करण्याचे बटण असेल.</p>' +
@@ -637,6 +681,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   root.addEventListener('input', function (e) { if (mode === 'edit') onField(e.target, false); });
   root.addEventListener('change', function (e) { if (mode === 'edit') onField(e.target, true); });
   function onField(t, isChange) {
+    if (t.dataset.img) { if (isChange && t.files && t.files[0]) addImage(t.dataset.img, t.files[0]); return; }
     if (t.id === 'ph-file' || t.id === 'mu-file') { if (isChange) (t.id === 'ph-file' ? addPhotos(t.files) : addSong(t.files && t.files[0])); return; }
     if (t.dataset.gh) { var s = ghStore(); s[t.dataset.gh] = t.value.trim(); ls.set('mn-gh', JSON.stringify(s)); return; }
     if (t.dataset.gp) { var P = phones(); P[t.dataset.gp] = t.value.trim(); savePhones(P); refreshLinks(); return; }
@@ -646,7 +691,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     }
     if (t.dataset.k) {
       var k = t.dataset.k, v;
-      if (t.type === 'checkbox') v = t.checked; else if (t.type === 'radio') { if (!t.checked) return; v = t.value; } else if (t.type === 'number') v = Number(t.value) || 0; else v = t.value;
+      if (t.type === 'checkbox') v = t.checked; else if (t.type === 'radio') { if (!t.checked) return; v = t.value; } else if (t.type === 'number' || t.type === 'range') v = Number(t.value) || 0; else v = t.value;
       if (k === 'type') {
         var old = S.type; set(S, k, v);
         if (S.headline === HEAD[old]) S.headline = HEAD[v]; if (S.envLine === ENVL[old]) S.envLine = ENVL[v];
@@ -672,10 +717,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       markDirty(); renderTab();
     } else if (act === 'clear') {
       ['groom', 'bride', 'gpar', 'bpar', 'date', 'time', 'venue', 'addr', 'map', 'host', 'hostPhone', 'message'].forEach(function (k) { S[k] = ''; });
-      S.events = []; S.faq = []; S.photos = []; S.guests = []; S.dress = { women: '', men: '', colors: [] }; S.sample = false;
+      S.events = []; S.faq = []; S.photos = []; S.img = {}; S.guests = []; S.dress = { women: '', men: '', colors: [] }; S.sample = false;
       markDirty(); renderNotes(); renderTab();
     } else if (act === 'draftyes') { try { S = Object.assign(clone(DEF), JSON.parse(ls.get('mn-draft'))); } catch (x) {} draftNote = ''; dirty = true; renderNotes(); renderTab(); setStatus('मसुदा परत आणला'); }
     else if (act === 'draftno') { ls.del('mn-draft'); draftNote = ''; renderNotes(); }
+    else if (act === 'rmimg') { if (S.img) delete S.img[b.dataset.k]; markDirty(); renderTab(); }
     else if (act === 'rmsong') { S.music.src = ''; S.music.name = ''; S.music.size = 0; markDirty(); renderTab(); }
     else if (act === 'addguests') {
       var box = $('g-bulk'), lines = box.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean), P = phones();
@@ -689,22 +735,33 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   root.addEventListener('click', function (e) { var a = e.target.closest('a[data-wa]'); if (a && a.getAttribute('aria-disabled') === 'true') { e.preventDefault(); toast('आधी निमंत्रणाची मुख्य लिंक भरा'); } });
 
   /* ---- photos & song ---- */
-  function shrink(file) {
+  function shrink(file, M, q, png, aspect) {
     return new Promise(function (res, rej) {
       var url = URL.createObjectURL(file), im = new Image();
       im.onload = function () {
-        var M = 900, k = Math.min(1, M / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
-        c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
-        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.78));
+        var sx = 0, sy = 0, sw = im.naturalWidth, sh = im.naturalHeight;
+        if (aspect) { var a = sw / sh; if (a > aspect) { var nw = sh * aspect; sx = (sw - nw) / 2; sw = nw; } else { var nh = sw / aspect; sy = (sh - nh) / 2; sh = nh; } }
+        var k = Math.min(1, M / Math.max(sw, sh)), c = document.createElement('canvas'), x;
+        c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k)); x = c.getContext('2d');
+        if (!png) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
+        x.drawImage(im, sx, sy, sw, sh, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL(png ? 'image/png' : 'image/jpeg', q));
       };
       im.onerror = function () { URL.revokeObjectURL(url); rej(); }; im.src = url;
     });
+  }
+  function addImage(key, file) {
+    if (!file) return; setStatus('चित्र तयार होत आहे…');
+    var two = key === 'bg' || key === 'coverbg' || key === 'envbg', p;
+    if (key === 'edge') p = shrink(file, 300, 1, true).then(function (d) { return { d: d }; });
+    else if (two) p = Promise.all([shrink(file, 2000, 0.8), shrink(file, 1600, 0.75, false, 9 / 16)]).then(function (r) { return { d: r[0], m: r[1] }; });
+    else p = shrink(file, key === 'couple' ? 1000 : 1200, 0.8).then(function (d) { return { d: d }; });
+    p.then(function (o) { S.img = S.img || {}; S.img[key] = o; markDirty(); renderTab(); setStatus('चित्र जोडले. जतन न केलेले बदल आहेत'); }, function () { toast('हे चित्र वाचता आले नाही. दुसरे निवडा.'); setStatus(''); });
   }
   function addPhotos(files) {
     var list = Array.prototype.slice.call(files || []).slice(0, Math.max(0, 12 - S.photos.length));
     if (!list.length) { toast('जास्तीत जास्त १२ फोटो'); return; }
     setStatus('फोटो तयार होत आहेत…');
-    Promise.all(list.map(function (f) { return shrink(f).catch(function () { return null; }); })).then(function (r) {
+    Promise.all(list.map(function (f) { return shrink(f, 900, 0.78).catch(function () { return null; }); })).then(function (r) {
       r.forEach(function (u) { if (u) S.photos.push(u); }); markDirty(); renderTab();
     });
   }
@@ -733,11 +790,12 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
   function b64s(str) { var b = new TextEncoder().encode(str), s = '', n = 0x8000; for (var i = 0; i < b.length; i += n) s += String.fromCharCode.apply(null, b.subarray(i, i + n)); return btoa(s); }
   function ghErr(r, j) { var e = new Error((j && j.message) || ('HTTP ' + r.status)); e.code = r.status; return e; }
+  var ghBr = '';
   async function ghPut(path, b64, msg) {
     var c = ghCfg(); if (!c.token || !c.owner || !c.repo) { var e0 = new Error('setup'); e0.code = 'gh_setup'; throw e0; }
     var H = { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
-    var base = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo), br = c.branch;
-    if (!br) { var r0 = await fetch(base, { headers: H }); if (!r0.ok) throw ghErr(r0, await r0.json().catch(function () { return {}; })); br = (await r0.json()).default_branch || 'main'; }
+    var base = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo), br = c.branch || ghBr;
+    if (!br) { var r0 = await fetch(base, { headers: H }); if (!r0.ok) throw ghErr(r0, await r0.json().catch(function () { return {}; })); br = (await r0.json()).default_branch || 'main'; ghBr = br; }
     var url = base + '/contents/' + path.split('/').map(encodeURIComponent).join('/'), body = { message: msg, content: b64, branch: br };
     var g = await fetch(url + '?ref=' + encodeURIComponent(br), { headers: H });
     if (g.status === 200) body.sha = (await g.json()).sha; else if (g.status !== 404) throw ghErr(g, await g.json().catch(function () { return {}; }));
@@ -749,6 +807,24 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var mm = /^data:([^;]+);base64,(.*)$/.exec(m.src); if (!mm) return;
     var ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav' })[mm[1]] || 'mp3';
     var name = 'music.' + ext; await ghPut(name, mm[2], 'गाणे अद्ययावत'); m.src = name + '?v=' + Date.now().toString(36);
+  }
+  function hash8(s) { var h = 2166136261; for (var i = 0; i < s.length; i += 7) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+  async function hostImages() {
+    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], edge: ['edge.png'], couple: ['couple.jpg'], venue: ['venue.jpg'] };
+    var v = Date.now().toString(36), IM = S.img || {}, FL = ['d', 'm'], key, i, j, o, mm, path;
+    for (key in NAMES) {
+      o = IM[key]; if (!o) continue;
+      for (i = 0; i < NAMES[key].length; i++) {
+        mm = o[FL[i]] && /^data:[^;]+;base64,(.*)$/.exec(o[FL[i]]); if (!mm) continue;
+        path = 'images/' + NAMES[key][i]; setStatus('चित्र जतन होत आहे: ' + NAMES[key][i]);
+        await ghPut(path, mm[1], 'चित्र अद्ययावत: ' + path); o[FL[i]] = path + '?v=' + v;
+      }
+    }
+    for (j = 0; j < S.photos.length; j++) {
+      mm = /^data:[^;]+;base64,(.*)$/.exec(S.photos[j]); if (!mm) continue;
+      path = 'images/gallery-' + hash8(mm[1]) + '.jpg'; setStatus('फोटो जतन होत आहे (' + (j + 1) + ')');
+      await ghPut(path, mm[1], 'फोटो जोडला'); S.photos[j] = path;
+    }
   }
   function validate() {
     if (!(S.groom || '').trim() || !(S.bride || '').trim()) { tab = 'basics'; renderTab(); return 'आधी वर आणि वधूची नावे भरा.'; }
@@ -777,7 +853,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         var a = await CLAUDE.use('artifact'); if (!a) { var ee = new Error('x'); ee.code = 'not_granted'; throw ee; }
         await a.publish(buildDoc(false)); try { sessionStorage.setItem('mn-done', '1'); } catch (x) {}
       } else {
-        await hostSong();
+        ghBr = ''; await hostSong(); await hostImages(); setStatus('जतन होत आहे…');
         await ghPut(ghCfg().path || 'index.html', b64s(buildDoc(true)), 'निमंत्रण अद्ययावत');
         setStatus('GitHub वर जतन झाले ✓', 'ok'); toast('जतन झाले. बदल दिसायला १-२ मिनिटे लागतात.');
       }

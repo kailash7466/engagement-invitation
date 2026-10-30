@@ -19,6 +19,7 @@
   --e-line: #3a2f32; --e-accent: #e5849f; --e-accent-fg: #2a0b15; --e-ok: #7fd1a3; --e-bad: #ff9a92; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; }
 h1, h2, h3, p { margin: 0; }
 button { font: inherit; }
@@ -177,8 +178,10 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env .tap { position: absolute; bottom: calc(6% + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; text-align: center; color: var(--wine); font-style: italic; font-size: 1.15rem; transition: opacity .4s; }
 #env .seal { position: absolute; left: 50%; top: 50%; width: 128px; height: 128px; margin: -64px 0 0 -64px; transition: transform .6s ease-in, opacity .5s; filter: drop-shadow(0 6px 8px rgba(60, 30, 20, .35)); animation: breathe 2.6s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-#env.open .ft { transform: translateY(-102%); } #env.open .fb { transform: translateY(102%); }
-#env.open .fle { transform: translateX(-102%); } #env.open .fr { transform: translateX(102%); }
+#env { transition: opacity .55s ease; }
+#env.fade { opacity: 0; pointer-events: none; }
+#env .ft { transform-origin: 50% 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+#env.open .ft { transform: perspective(1100px) rotateX(-178deg); }
 #env.open .seal { transform: scale(1.4); opacity: 0; animation: none; }
 #env.open .seams, #env.open .top, #env.open .tap { opacity: 0; }
 #env.open .top { transform: translateY(-40px); }
@@ -196,12 +199,16 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .flora.has { background-image: var(--ed); background-repeat: repeat-y; background-size: 100% auto; background-position: top center; }
 .venue-img { width: min(100%, 320px); aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; border: 2px solid var(--gold); display: block; }
 .couple { width: min(44%, 170px); }
-#env.hasimg .fl { background: linear-gradient(var(--ovc2, transparent), var(--ovc2, transparent)), var(--ev-d) center / cover no-repeat; }
+#env.hasimg .fl { background: var(--ev-d) center / cover no-repeat; filter: none; }
+#env.hasimg .seams { display: none; }
+#env .fbase { display: none; }
+#env.hasimg .fbase { display: block; clip-path: polygon(0 0, 50% calc(50% - 4px), 100% 0, 100% 100%, 0 100%); }
+#env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
   .bgfix { background-image: var(--bg-m, var(--bg-d, none)); }
   .pg.cov { background-image: linear-gradient(var(--ovc, transparent), var(--ovc, transparent)), var(--cv-m, var(--cv-d)); }
-  #env.hasimg .fl { background: linear-gradient(var(--ovc2, transparent), var(--ovc2, transparent)), var(--ev-m, var(--ev-d)) center / cover no-repeat; }
+  #env.hasimg .fl { background: var(--ev-m, var(--ev-d)) center / cover no-repeat; }
 }
 .e-imgprev { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .e-imgprev img { max-width: 160px; max-height: 120px; border-radius: 8px; border: 1px solid var(--e-line); object-fit: cover; background: repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
@@ -382,9 +389,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
     var h = '<div id="vw" style="' + esc(vs.join(';')) + '">';
     if (IM.bg && IM.bg.d) h += '<div class="bgfix"></div><div class="bgov"></div>';
-    h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
+    if (hasEnv) {
+      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl fbase"></div><div class="fl ft"></div></div>';
+    } else {
+      h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
       '<svg class="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="' + t.gold + '" fill="none" stroke-width="1" vector-effect="non-scaling-stroke"><path d="M0 0L50 50L100 0M0 100L50 50L100 100M0 0L50 50L0 100M100 0L50 50L100 100" vector-effect="non-scaling-stroke"/></g></svg>' +
       '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div>' + sealSvg(t) + '<div class="tap">उघडण्यासाठी टॅप करा</div></div>';
+    }
     h += '<div class="flora l' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="flora r' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="col" id="col">';
 
     h += '<section class="pg' + (hasCv ? ' cov' : '') + '"><div class="rise" style="display:contents">' +
@@ -468,11 +479,12 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic(); env.classList.add('open');
       var wait = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 0 : 1000;
-      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); }, wait));
+      timers.push(setTimeout(function () { env.classList.add('fade'); }, wait ? 850 : 0));
+      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); }, wait ? 1450 : 60));
     }
     env.addEventListener('click', openEnv);
     env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnv(); } });
-    function onScroll() { var max = document.documentElement.scrollHeight - window.innerHeight; hint.classList.toggle('off', !opened || window.scrollY > max - 120); }
+    function onScroll() { var max = document.documentElement.scrollHeight - window.innerHeight; hint.classList.toggle('off', !opened || window.scrollY > 40 || max < 80); }
     window.addEventListener('scroll', onScroll, { passive: true }); cleanups.push(function () { window.removeEventListener('scroll', onScroll); });
 
     var dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(S.date || ''), tm = /^(\d{2}):(\d{2})/.exec(S.time || '');

@@ -272,8 +272,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     bgx: { overlay: 30, pos: 'center', flap: 46, envText: false },
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     faq: [],
-    host: 'देशमुख व कुलकर्णी परिवार', hostPhone: '9876543210', rsvpBy: '', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
-    show: { family: true, countdown: true, venue: true, timeline: true, dress: true, gallery: true, faq: false, rsvp: true },
+    host: 'देशमुख व कुलकर्णी परिवार', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
+    show: { family: true, countdown: true, venue: true, timeline: true, dress: true, gallery: true, faq: false },
     shareUrl: '',
     guests: [{ id: 'gsharma', name: 'श्री. शर्मा परिवार' }, { id: 'gjoshi', name: 'सौ. व श्री. जोशी' }]
   };
@@ -427,7 +427,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += '<section class="pg"><h2 class="t1 script">उलटगणती</h2><p class="sub">या क्षणाची आम्ही आतुरतेने वाट पाहत आहोत</p><div class="count" id="cd"><div><b id="c-d">०</b><span>दिवस</span></div><div><b id="c-h">०</b><span>तास</span></div><div><b id="c-m">०</b><span>मिनिटे</span></div><div><b id="c-s">०</b><span>सेकंद</span></div></div><p class="script" id="c-msg" style="font-size:1.2rem"></p></section>';
     }
     if (sh.venue !== false && (S.venue || S.addr)) {
-      h += '<section class="pg"><h2 class="t1 script">कार्यक्रम स्थळ</h2>' +
+      h += '<section class="pg"><h2 class="t1 script">' + (WED ? 'विवाह स्थळ' : 'साखरपुडा स्थळ') + '</h2>' +
         (IM.venue && IM.venue.d ? '<img class="venue-img" src="' + esc(IM.venue.d) + '" alt="">' : '<svg class="venue-art" viewBox="0 0 270 190" aria-hidden="true"><g fill="none" stroke="' + t.blue + '" stroke-width="1.4" stroke-linejoin="round"><path d="M20 170h230" stroke="' + t.gold + '"/><path d="M40 170V92h40v78M190 170V92h40v78M80 170V70h110v100" fill="' + hexA(t.rose, .5) + '"/><path d="M112 70V40l23-22 23 22v30" fill="' + hexA(t.rose, .7) + '"/><path d="M135 18v-8M131 12h8" stroke="' + t.gold + '"/><path d="M120 170v-44a15 15 0 0 1 30 0v44" fill="' + hexA(t.gold, .35) + '"/><path d="M96 98h14M160 98h14M96 122h14M160 122h14"/><path d="M40 92l20-18 20 18M190 92l20-18 20 18"/><path d="M105 170v6h60v-6M95 176v6h80v-6" stroke="' + t.gold + '"/><circle cx="22" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M22 154v16"/><circle cx="248" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M248 154v16"/></g></svg>') +
         '<div class="pin"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="' + t.accent + '" stroke-width="1.6"><path d="M9 16s5-4.6 5-8.5a5 5 0 0 0-10 0C4 11.4 9 16 9 16z"/><circle cx="9" cy="7.5" r="1.8"/></svg></div>' +
         (S.venue ? '<h3 class="t2 script" style="margin:0">' + esc(N(S.venue)) + '</h3>' : '') + (S.addr ? '<p class="sub">' + esc(N(S.addr)) + '</p>' : '') +
@@ -447,16 +447,6 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     }
     if (sh.faq !== false && S.faq && S.faq.length) {
       h += '<section class="pg"><h2 class="t1 script">नेहमीचे प्रश्न</h2><div class="faq">' + S.faq.map(function (q) { return '<details><summary>' + esc(N(q.q)) + '</summary><p>' + esc(N(q.a)) + '</p></details>'; }).join('') + '</div></section>';
-    }
-    if (sh.rsvp !== false) {
-      h += '<section class="pg"><h2 class="t1 script">उपस्थितीची माहिती</h2><p class="sub">आपण येणार का, ते कृपया कळवा' + (S.rsvpBy ? '. ' + esc(N(S.rsvpBy)) + ' पर्यंत.' : '.') + '</p>' +
-        '<div class="rsvp" id="rf"><div><label class="l" for="r-name">पूर्ण नाव *</label><input type="text" id="r-name" autocomplete="name" value="' + esc(gn) + '"></div>' +
-        '<div><span class="l">आपण उपस्थित राहणार का? *</span><div class="opts"><label><input type="radio" name="att" value="yes" checked> होय, येणार</label><label><input type="radio" name="att" value="no"> नाही, येता येणार नाही</label></div></div>' +
-        '<div><label class="l" for="r-n">एकूण किती जण (आपल्यासह)</label><input type="number" id="r-n" min="1" max="20" value="1" inputmode="numeric"></div>' +
-        '<div><label class="l" for="r-diet">आहाराबद्दल काही सूचना (ऐच्छिक)</label><input type="text" id="r-diet"></div>' +
-        '<div><label class="l" for="r-msg">शुभेच्छा संदेश (ऐच्छिक)</label><textarea id="r-msg"></textarea></div>' +
-        '<div class="err" id="r-err" role="alert"></div><button class="btn" type="button" id="r-go">पुढे जा</button></div>' +
-        '<div class="done" id="done" hidden><p class="script" style="font-size:1.3rem">धन्यवाद!</p><p class="sub" style="font-size:.9rem">उत्तर पाठवण्यासाठी खालील बटण दाबा. WhatsApp उघडेल. तिथे ‘पाठवा’ दाबल्यावरच आम्हाला संदेश मिळेल.</p><a class="btn wa" id="r-wa" href="#" target="_blank" rel="noopener">WhatsApp वर कळवा</a><button type="button" class="btn ghost" id="r-cp">संदेश कॉपी करा</button><textarea id="r-box" readonly></textarea></div></section>';
     }
     h += '<section class="pg"><p class="script" style="font-size:1.2rem">॥ श्री गणेशाय नमः ॥</p><h2 class="t2 script">' + esc(N(S.closing)) + '</h2><div class="rule"></div>' +
       (S.host ? '<div class="sub">आपले नम्र</div><div class="script" style="font-size:1.6rem">' + esc(N(S.host)) + '</div>' : '') + '<p class="script" style="font-size:1.1rem;margin-top:10px">॥ शुभं भवतु ॥</p></section></div>';
@@ -517,22 +507,6 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       };
       tick(); timers.push(setInterval(tick, 1000));
     }
-    if ($('r-go')) {
-      $('r-go').onclick = function () {
-        var name = $('r-name').value.trim();
-        if (!name) { $('r-err').textContent = 'कृपया आपले नाव लिहा.'; $('r-name').focus(); return; }
-        $('r-err').textContent = '';
-        var yes = document.querySelector('input[name="att"]:checked').value === 'yes';
-        var L = ['नमस्कार,', (S.type === 'engagement' ? 'साखरपुड्याच्या' : 'विवाहाच्या') + ' निमंत्रणाला उत्तर:', '', 'नाव: ' + name, yes ? 'उपस्थिती: होय, येणार' : 'उपस्थिती: क्षमस्व, येता येणार नाही'];
-        if (yes) L.push('एकूण जण: ' + N($('r-n').value || '1'));
-        if ($('r-diet').value.trim()) L.push('आहार सूचना: ' + $('r-diet').value.trim());
-        if ($('r-msg').value.trim()) L.push('', $('r-msg').value.trim());
-        var msg = L.join('\n'), p = String(S.hostPhone || '').replace(/\D/g, ''); if (p.length === 10) p = '91' + p;
-        $('r-wa').href = 'https://wa.me/' + p + '?text=' + encodeURIComponent(msg);
-        $('r-box').value = msg; $('rf').hidden = true; $('done').hidden = false; $('done').scrollIntoView({ block: 'center' });
-      };
-      $('r-cp').onclick = function () { copyText($('r-box').value, $('r-cp'), $('r-box')); };
-    }
     if (preview) $('back').onclick = function () { enterEdit(); };
     window.scrollTo(0, 0);
   }
@@ -584,7 +558,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('तारीख आणि वेळ', row(F('तारीख', 'date', { type: 'date' }), F('मुहूर्ताची वेळ', 'time', { type: 'time' })) + '<span class="e-h">उलटगणती याच तारखेवरून चालते.</span>');
       h += card('मजकूर', F('वरची छोटी ओळ', 'tagline') + F('मुख्य ओळ', 'headline') + F('लखोट्यावरील ओळ', 'envLine', { hint: 'लखोटा उघडण्यापूर्वी दिसते' }) + F('छोटा संदेश (ऐच्छिक)', 'message', { area: 1, hint: 'पहिल्या पानावर तारखेखाली दिसेल' }));
     } else if (k === 'venue') {
-      h += card('कार्यक्रम स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
+      h += card('विवाह स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
     } else if (k === 'events') {
       h += card('कार्यक्रमांची वेळरेषा', (S.events.length ? S.events.map(function (e, i) {
         return '<div class="e-item">' + itemHead('events', i) + row(LF('events', i, 'time', 'वेळ', e.time), iconSel(i, e.icon)) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
@@ -611,7 +585,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('लखोट्याची सेटिंग', '<div class="e-f"><label for="f-flap">झाकणाची खोली (२५–६५)</label><input id="f-flap" type="range" min="25" max="65" step="1" data-k="bgx.flap" value="' + (+BX2.flap || 46) + '"><span class="e-h">झाकणाचे टोक (सील) फोटोत जिथे आहे तिथपर्यंत ही खोली आणा. पूर्वावलोकन दाबून तपासा.</span></div>' +
         '<label class="e-chk"><input type="checkbox" data-k="bgx.envText"' + (BX2.envText ? ' checked' : '') + '> लखोट्यावर पाहुण्याचे नाव आणि ‘उघडण्यासाठी टॅप करा’ दाखवा</label>');
       h += slot('couple', 'जोडप्याचा फोटो (ऐच्छिक)', 'पहिल्या पानावर नावांच्या वर अंडाकृती चौकटीत दिसतो.');
-      h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'कार्यक्रम स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
+      h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'विवाह स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
       h += slot('edge', 'बाजूची सजावट (ऐच्छिक)', 'पारदर्शक PNG, उभ्या पट्टीसारखी (उदा. १२० × ६०० px). ती दोन्ही बाजूंना वर-खाली पुन्हा पुन्हा लागते.', true);
       h += card('गॅलरीचे फोटो', '<p class="e-h">गॅलरीचे फोटो ‘फोटो’ विभागात जोडा.</p>');
     } else if (k === 'music') {
@@ -623,11 +597,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         F('गाणे कुठून सुरू करायचे (सेकंद)', 'music.start', { type: 'number', mode: 'numeric', hint: 'आवडता भाग थेट लावण्यासाठी. उदा. ३०' }) +
         chk('music.auto', 'लखोटा उघडल्यावर गाणे आपोआप सुरू करा') + (m.src ? '<button class="e-btn" type="button" data-act="rmsong" style="margin-top:8px">गाणे काढा</button>' : ''));
     } else if (k === 'host') {
-      h += card('निमंत्रक', F('निमंत्रक कुटुंबाचे नाव', 'host') + F('तुमचा WhatsApp नंबर', 'hostPhone', { type: 'tel', mode: 'tel', hint: 'पाहुण्यांचे उपस्थितीचे उत्तर या नंबरवर WhatsApp ने येईल. हा नंबर पानात दिसू शकतो.' }) + F('उत्तर कळवण्याची शेवटची तारीख (ऐच्छिक)', 'rsvpBy', { hint: 'उदा. ३० नोव्हेंबर २०२६' }) + F('शेवटची ओळ', 'closing'));
+      h += card('निमंत्रक', F('निमंत्रक कुटुंबाचे नाव', 'host') + F('शेवटची ओळ', 'closing'));
     } else if (k === 'look') {
       h += card('रंगसंगती', '<div class="e-seg" role="radiogroup">' + Object.keys(TH).map(function (id) { var t = TH[id]; return '<input type="radio" id="th-' + id + '" name="theme" data-k="theme" value="' + id + '"' + (S.theme === id ? ' checked' : '') + '><label for="th-' + id + '"><span class="e-sw" style="background:linear-gradient(135deg,' + t.paper + ' 55%,' + t.accent + ' 55%)"></span>' + t.n + '</label>'; }).join('') + '</div>');
       h += card('अंक', seg('digits', [['mr', 'मराठी (०१२३)'], ['en', 'इंग्रजी (0123)']]));
-      h += card('कोणती पाने दाखवायची', chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'कार्यक्रम स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी') + chk('show.rsvp', 'उपस्थितीचा फॉर्म'));
+      h += card('कोणती पाने दाखवायची', chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'विवाह स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी'));
     } else if (k === 'share') {
       h += shareHtml();
     }
@@ -748,7 +722,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       if (act === 'del') a.splice(i, 1); else if (j >= 0 && j < a.length) { var tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
       markDirty(); renderTab();
     } else if (act === 'clear') {
-      ['groom', 'bride', 'gpar', 'bpar', 'date', 'time', 'venue', 'addr', 'map', 'host', 'hostPhone', 'message'].forEach(function (k) { S[k] = ''; });
+      ['groom', 'bride', 'gpar', 'bpar', 'date', 'time', 'venue', 'addr', 'map', 'host', 'message'].forEach(function (k) { S[k] = ''; });
       S.events = []; S.faq = []; S.photos = []; S.img = {}; S.guests = []; S.dress = { women: '', men: '', colors: [] }; S.sample = false;
       markDirty(); renderNotes(); renderTab();
     } else if (act === 'draftyes') { try { S = Object.assign(clone(DEF), JSON.parse(ls.get('mn-draft'))); } catch (x) {} draftNote = ''; dirty = true; renderNotes(); renderTab(); setStatus('मसुदा परत आणला'); }

@@ -202,7 +202,20 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasimg .fl { background: var(--ev-d) center / cover no-repeat; filter: none; }
 #env.hasimg .seams { display: none; }
 #env .fbase { display: none; }
-#env.hasimg .fbase { display: block; clip-path: polygon(0 0, 50% calc(50% - 4px), 100% 0, 100% 100%, 0 100%); }
+#env.hasimg .fbase { display: block; clip-path: polygon(0 0, 50% calc(var(--fd, 46%) - 4px), 100% 0, 100% 100%, 0 100%); }
+#env .fx { position: absolute; inset: 0; }
+#env .gw, #env .fw { position: absolute; inset: 0; }
+#env .gw, #env .fw, #env .fin { display: none; }
+#env.hasimg .gw, #env.hasimg .fw, #env.hasimg .fin { display: block; }
+#env.hasimg { transition: opacity .9s ease; }
+#env.hasimg .gw { transition: filter .4s ease; }
+#env.hasimg.glow .gw { filter: drop-shadow(0 0 8px rgba(255, 222, 140, .95)) drop-shadow(0 0 26px rgba(255, 190, 80, .75)); }
+#env.hasimg .fw { transform-origin: 50% 0; transform-style: preserve-3d; transition: transform 1.3s cubic-bezier(.55, 0, .25, 1); }
+#env.hasimg.open .fw { transform: perspective(1200px) rotateX(-180deg); }
+#env.hasimg .ft { clip-path: polygon(0 0, 100% 0, 50% var(--fd, 46%)); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: none; }
+#env.hasimg.open .ft { transform: none; }
+#env.hasimg .fk { clip-path: polygon(0 0, 100% 0, 50% var(--fd, 46%)); background: linear-gradient(180deg, #e3d4b6, #f8f2e6 60%); transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+#env.hasimg .fin { clip-path: polygon(0 0, 100% 0, 50% calc(var(--fd, 46%) + 4px)); background: radial-gradient(120% 90% at 50% 0%, #b79d6c 0%, #dcc9a3 38%, #f3eada 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
@@ -256,7 +269,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     dress: { women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
     photos: [],
     img: {},
-    bgx: { overlay: 30, pos: 'center' },
+    bgx: { overlay: 30, pos: 'center', flap: 46, envText: false },
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     faq: [],
     host: 'देशमुख व कुलकर्णी परिवार', hostPhone: '9876543210', rsvpBy: '', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
@@ -385,12 +398,14 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     setImg('bg', IM.bg); setImg('cv', IM.coverbg); setImg('ev', IM.envbg);
     var hasEdge = !!(IM.edge && IM.edge.d); if (hasEdge) vs.push('--ed:' + cssUrl(IM.edge.d));
     vs.push('--ovc:' + hexA(t.paper, ov / 100)); vs.push('--ovc2:' + hexA(t.paper, 0.18));
+    var flap = Math.max(25, Math.min(65, +BX.flap || 46)); vs.push('--fd:' + flap + '%');
     vs.push('--bgpos:' + (['top', 'center', 'bottom'].indexOf(BX.pos) >= 0 ? BX.pos : 'center'));
     var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
     var h = '<div id="vw" style="' + esc(vs.join(';')) + '">';
     if (IM.bg && IM.bg.d) h += '<div class="bgfix"></div><div class="bgov"></div>';
     if (hasEnv) {
-      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl fbase"></div><div class="fl ft"></div></div>';
+      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div><div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
+        (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
     } else {
       h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
       '<svg class="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="' + t.gold + '" fill="none" stroke-width="1" vector-effect="non-scaling-stroke"><path d="M0 0L50 50L100 0M0 100L50 50L100 100M0 0L50 50L0 100M100 0L50 50L100 100" vector-effect="non-scaling-stroke"/></g></svg>' +
@@ -477,10 +492,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     document.addEventListener('visibilitychange', vis); cleanups.push(function () { document.removeEventListener('visibilitychange', vis); if (bgm) { try { bgm.pause(); } catch (e) {} } });
 
     function openEnv() {
-      if (opened) return; opened = true; startMusic(); env.classList.add('open');
-      var wait = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 0 : 1000;
-      timers.push(setTimeout(function () { env.classList.add('fade'); }, wait ? 850 : 0));
-      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); }, wait ? 1450 : 60));
+      if (opened) return; opened = true; startMusic();
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
+      var T = still ? [0, 0, 60] : (pic ? [300, 1650, 2650] : [0, 850, 1450]);
+      if (pic) env.classList.add('glow');
+      timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
+      timers.push(setTimeout(function () { env.classList.add('fade'); }, T[1]));
+      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); }, T[2]));
     }
     env.addEventListener('click', openEnv);
     env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnv(); } });
@@ -589,7 +607,9 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
         '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
       h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
-      h += slot('envbg', 'लखोट्याची पार्श्वभूमी (ऐच्छिक)', 'लखोटा बंद असताना दिसणारा फोटो.');
+      h += slot('envbg', 'लखोटा (ऐच्छिक)', 'बंद लखोट्याचा फोटो (झाकण आणि सील असलेला). टॅप केल्यावर त्याचे वरचे त्रिकोणी झाकण सोनेरी चमकेसह वर उघडते आणि आत निमंत्रण दिसते.');
+      h += card('लखोट्याची सेटिंग', '<div class="e-f"><label for="f-flap">झाकणाची खोली (२५–६५)</label><input id="f-flap" type="range" min="25" max="65" step="1" data-k="bgx.flap" value="' + (+BX2.flap || 46) + '"><span class="e-h">झाकणाचे टोक (सील) फोटोत जिथे आहे तिथपर्यंत ही खोली आणा. पूर्वावलोकन दाबून तपासा.</span></div>' +
+        '<label class="e-chk"><input type="checkbox" data-k="bgx.envText"' + (BX2.envText ? ' checked' : '') + '> लखोट्यावर पाहुण्याचे नाव आणि ‘उघडण्यासाठी टॅप करा’ दाखवा</label>');
       h += slot('couple', 'जोडप्याचा फोटो (ऐच्छिक)', 'पहिल्या पानावर नावांच्या वर अंडाकृती चौकटीत दिसतो.');
       h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'कार्यक्रम स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
       h += slot('edge', 'बाजूची सजावट (ऐच्छिक)', 'पारदर्शक PNG, उभ्या पट्टीसारखी (उदा. १२० × ६०० px). ती दोन्ही बाजूंना वर-खाली पुन्हा पुन्हा लागते.', true);

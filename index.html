@@ -140,6 +140,10 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .sw div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--ui); font-size: .78rem; color: var(--muted); width: 60px; text-align: center; overflow-wrap: anywhere; }
 .sw i { width: 34px; height: 34px; border-radius: 50%; display: block; box-shadow: 0 0 0 3px var(--paper2), 0 0 0 4px var(--line); }
 .dc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
+.snowc { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+.e-snowbox { height: 200px; border-radius: 10px; overflow: hidden; margin: 10px 0; border: 1px solid var(--e-line); background-size: cover; background-position: center; }
+.e-snowbox canvas { width: 100%; height: 100%; display: block; }
+.e-f input[type="range"] { padding: 0; accent-color: var(--e-accent); }
 .dimgs { display: grid; gap: 10px; width: 100%; margin-top: 4px; }
 .dimgs.n1 { grid-template-columns: minmax(0, 190px); justify-content: center; }
 .dimgs.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -276,6 +280,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     dress: { cap1: 'महिला', cap2: 'पुरुष', cap3: '', women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
     photos: [],
     img: {},
+    snow: { on: true, amount: 90, speed: 4, size: 4, wind: 1, opacity: 85, color: 'white' },
     bgx: { overlay: 30, pos: 'center', flap: 46, envText: false },
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     faq: [],
@@ -327,10 +332,46 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   })();
   function ghCfg() { var s = ghStore(); return { owner: s.owner || GHI.owner || '', repo: s.repo || GHI.repo || '', branch: s.branch || '', path: s.path || 'index.html', token: s.token || '' }; }
 
+  /* ---------------- snowfall ---------------- */
+  var snowStop = null;
+  function stopSnow() { if (snowStop) { snowStop(); snowStop = null; } }
+  var SNOWC = { white: ['#ffffff', '#ffffff', 'rgba(120,140,178,.55)'], gold: ['#fff4c8', '#f0cd6e', 'rgba(168,116,26,.65)'], blue: ['#ffffff', '#cfe3f5', 'rgba(80,130,190,.65)'] }, snowSprites = {};
+  function snowSprite(name) {
+    if (snowSprites[name]) return snowSprites[name];
+    var c = SNOWC[name] || SNOWC.white, cv = document.createElement('canvas'), x, r = 32, g;
+    cv.width = cv.height = 64; x = cv.getContext('2d'); g = x.createRadialGradient(r, r, 0, r, r, r);
+    g.addColorStop(0, c[0]); g.addColorStop(0.62, c[1]); g.addColorStop(0.9, c[2]); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.beginPath(); x.arc(r, r, r, 0, 6.2832); x.fill(); snowSprites[name] = cv; return cv;
+  }
+  function startSnow(cv, getCfg) {
+    var ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W = 1, H = 1, P = [], raf = 0, last = 0, alive = true;
+    var still = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    function size() { var r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); P = []; }
+    function mk(first) { return { x: Math.random() * W, y: first ? Math.random() * H : -12, z: Math.random(), ph: Math.random() * 6.28 }; }
+    function frame(t) {
+      if (!alive) return; if (!still) raf = requestAnimationFrame(frame);
+      var c = getCfg(), dt = Math.min(48, (t - last) || 16) / 16.67, i, p, d, sp; last = t;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      if (!c || !c.on) return;
+      var want = Math.min(700, Math.round((+c.amount || 0) * (W * H) / (400 * 800)));
+      while (P.length < want) P.push(mk(true)); if (P.length > want) P.length = want;
+      var spd = 0.35 + (+c.speed || 4) * 0.32, rad = 1 + (+c.size || 4) * 0.75, wind = (+c.wind || 0) * 0.22, al = Math.max(0.1, Math.min(1, (+c.opacity || 85) / 100));
+      sp = snowSprite(c.color);
+      for (i = 0; i < P.length; i++) {
+        p = P[i]; p.y += spd * (0.45 + 0.9 * p.z) * dt; p.ph += 0.02 * dt; p.x += (wind * (0.5 + p.z) + Math.sin(p.ph) * 0.35) * dt;
+        if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; } if (p.x > W + 10) p.x = -10; else if (p.x < -10) p.x = W + 10;
+        d = rad * (0.45 + 0.9 * p.z) * 2; ctx.globalAlpha = al * (0.45 + 0.55 * p.z); ctx.drawImage(sp, p.x - d / 2, p.y - d / 2, d, d);
+      }
+      ctx.globalAlpha = 1;
+    }
+    size(); var onR = function () { size(); if (still) frame(0); }; window.addEventListener('resize', onR); raf = requestAnimationFrame(frame);
+    return function () { alive = false; cancelAnimationFrame(raf); window.removeEventListener('resize', onR); };
+  }
+
   /* ---------------- state ---------------- */
   var mode = 'boot', tab = 'basics', dirty = false, busy = false, draftTimer = 0;
   var timers = [], cleanups = [];
-  var TABS = [['basics', 'मुख्य माहिती'], ['venue', 'स्थळ'], ['events', 'कार्यक्रम'], ['dress', 'पोशाख'], ['photos', 'फोटो'], ['music', 'गाणे'], ['host', 'निमंत्रक'], ['look', 'रंग आणि पाने'], ['images', 'पार्श्वभूमी व चित्रे'], ['share', 'पाठवा']];
+  var TABS = [['basics', 'मुख्य माहिती'], ['venue', 'स्थळ'], ['events', 'कार्यक्रम'], ['dress', 'पोशाख'], ['photos', 'फोटो'], ['music', 'गाणे'], ['host', 'निमंत्रक'], ['look', 'रंग आणि पाने'], ['images', 'पार्श्वभूमी व चित्रे'], ['snow', 'हिमवर्षाव'], ['share', 'पाठवा']];
 
   /* ---------------- boot ---------------- */
   function decideEditor() {
@@ -346,6 +387,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   decideEditor().then(function (ed) { if (ed) enterEdit(); else enterView(false); });
 
   function leaveAll() {
+    stopSnow();
     timers.forEach(function (t) { clearInterval(t); clearTimeout(t); }); timers = [];
     cleanups.forEach(function (f) { try { f(); } catch (e) {} }); cleanups = [];
     var h = document.documentElement;
@@ -410,6 +452,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
     var h = '<div id="vw" style="' + esc(vs.join(';')) + '">';
     if (IM.bg && IM.bg.d) h += '<div class="bgfix"></div><div class="bgov"></div>';
+    if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
     if (hasEnv) {
       h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div><div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
         (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
@@ -471,6 +514,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     applyTheme(); root.innerHTML = viewerHtml(preview);
     var N = function (s) { return S.digits === 'en' ? String(s == null ? '' : s) : mr(s == null ? '' : s); };
     document.documentElement.classList.add('locked');
+    if ($('snow')) cleanups.push(startSnow($('snow'), function () { return S.snow; }));
     var env = $('env'), opened = false, hint = $('hint'), bgm = $('bgm'), mus = $('mus'), muted = false, playing = false;
     var ICON_ON = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/></svg>';
     var ICON_OFF = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/><path d="M3 3l16 16"/></svg>';
@@ -604,6 +648,15 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'विवाह स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
       h += slot('edge', 'बाजूची सजावट (ऐच्छिक)', 'पारदर्शक PNG, उभ्या पट्टीसारखी (उदा. १२० × ६०० px). ती दोन्ही बाजूंना वर-खाली पुन्हा पुन्हा लागते.', true);
       h += card('गॅलरीचे फोटो', '<p class="e-h">गॅलरीचे फोटो ‘फोटो’ विभागात जोडा.</p>');
+    } else if (k === 'snow') {
+      var SN = S.snow || {}, TT = TH[S.theme] || TH.ivory, bgi = (S.img && S.img.bg && S.img.bg.d) ? 'background-image:url(' + "'" + String(S.img.bg.d).replace(/'/g, '%27') + "'" + ')' : 'background-image:linear-gradient(180deg,' + TT.paper2 + ',' + TT.paper + ')';
+      var R = function (key, label, min, max, step, hint) {
+        var v = +SN[key]; if (isNaN(v)) v = DEF.snow[key];
+        return '<div class="e-f"><label for="sn-' + key + '">' + label + ': <b id="sv-' + key + '">' + v + '</b></label><input id="sn-' + key + '" type="range" min="' + min + '" max="' + max + '" step="' + step + '" data-k="snow.' + key + '" data-show="sv-' + key + '" value="' + v + '">' + (hint ? '<span class="e-h">' + hint + '</span>' : '') + '</div>';
+      };
+      h += card('हिमवर्षाव', '<label class="e-chk"><input type="checkbox" data-k="snow.on"' + (SN.on ? ' checked' : '') + '> निमंत्रणाच्या सर्व पानांवर हिमवर्षाव दाखवा</label><div class="e-snowbox" style="' + esc(bgi) + '"><canvas id="snow-prev"></canvas></div><p class="e-h">पट्ट्या सरकवल्यावर ही पेटी लगेच बदलते. खरे निमंत्रण पाहण्यासाठी वर ‘पूर्वावलोकन’ दाबा.</p>');
+      h += card('नियंत्रणे', R('amount', 'हिमकण किती', 10, 400, 10, 'मोबाईलच्या एका पडद्यावर साधारण किती कण. मोठ्या पडद्यावर प्रमाणात जास्त दिसतात.') + R('size', 'कणांचा आकार', 1, 10, 1) + R('speed', 'पडण्याची गती', 1, 10, 1) + R('wind', 'वाऱ्याची दिशा (डावीकडे − / उजवीकडे +)', -5, 5, 1) + R('opacity', 'स्पष्टता (%)', 20, 100, 5) +
+        '<div class="e-f"><label for="sn-color">रंग</label><select id="sn-color" data-k="snow.color">' + [['white', 'पांढरा'], ['blue', 'निळसर'], ['gold', 'सोनेरी']].map(function (c) { return '<option value="' + c[0] + '"' + (SN.color === c[0] ? ' selected' : '') + '>' + c[1] + '</option>'; }).join('') + '</select></div>');
     } else if (k === 'music') {
       var m = S.music || {};
       h += card('गाणे', '<p class="e-h" style="margin-bottom:10px">लखोटा उघडण्यासाठी पाहुण्याने टॅप केल्यावर गाणे आपोआप सुरू होईल. खाली उजवीकडे आवाज बंद-चालू करण्याचे बटण असेल.</p>' +
@@ -685,7 +738,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   function renderNav() {
     $('e-nav').innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-act="tab" data-t="' + t[0] + '" aria-selected="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join('');
   }
-  function renderTab() { renderNav(); $('e-main').innerHTML = tabHtml(tab); if (tab === 'share') refreshLinks(); }
+  function renderTab() { stopSnow(); renderNav(); $('e-main').innerHTML = tabHtml(tab); if (tab === 'share') refreshLinks(); if (tab === 'snow' && $('snow-prev')) snowStop = startSnow($('snow-prev'), function () { return S.snow; }); }
 
   function enterEdit() {
     leaveAll(); mode = 'edit'; document.body.className = 'm-edit';
@@ -719,6 +772,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         if (S.headline === HEAD[old]) S.headline = HEAD[v]; if (S.envLine === ENVL[old]) S.envLine = ENVL[v];
         markDirty(); renderTab(); return;
       }
+      if (t.dataset.show && $(t.dataset.show)) $(t.dataset.show).textContent = t.value;
       if (k === 'music.src') { S.music.name = ''; S.music.size = 0; }
       set(S, k, v); markDirty(); if (k === 'shareUrl') refreshLinks();
     }

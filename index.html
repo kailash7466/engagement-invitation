@@ -140,6 +140,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .sw div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--ui); font-size: .78rem; color: var(--muted); width: 60px; text-align: center; overflow-wrap: anywhere; }
 .sw i { width: 34px; height: 34px; border-radius: 50%; display: block; box-shadow: 0 0 0 3px var(--paper2), 0 0 0 4px var(--line); }
 .dc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
+.dimgs { display: grid; gap: 10px; width: 100%; margin-top: 4px; }
+.dimgs.n1 { grid-template-columns: minmax(0, 190px); justify-content: center; }
+.dimgs.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dimgs.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.dimgs figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.dimgs img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; border: 2px solid var(--gold); display: block; background: var(--card); }
+.dimgs figcaption { font-family: var(--ui); font-weight: 600; font-size: .85rem; color: var(--muted); text-align: center; overflow-wrap: anywhere; }
 .dc b { display: block; font-family: var(--ui); font-size: .78rem; color: var(--muted); }
 .gal { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; width: calc(100% + 40px); margin-inline: -20px; padding-inline: 20px; padding-bottom: 6px; }
 .gal > * { flex: 0 0 min(220px, 100%); scroll-snap-align: center; }
@@ -266,7 +273,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       { time: 'दुपारी १:००', t: 'स्नेहभोजन', d: 'सर्वांसाठी पंगत', icon: 'food' },
       { time: 'सायं. ४:००', t: 'पाठवणी', d: 'आशीर्वाद घेऊन निरोप', icon: 'car' }
     ],
-    dress: { women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
+    dress: { cap1: 'महिला', cap2: 'पुरुष', cap3: '', women: 'साडी किंवा पारंपरिक पोशाख', men: 'कुर्ता, धोतर किंवा शेरवानी', colors: [{ n: 'मोरपंखी', c: '#1f7a78' }, { n: 'गुलाबी', c: '#e59aa8' }, { n: 'केशरी', c: '#e8873a' }, { n: 'हळदी', c: '#efc24a' }, { n: 'फिकट हिरवा', c: '#a7c4a0' }] },
     photos: [],
     img: {},
     bgx: { overlay: 30, pos: 'center', flap: 46, envText: false },
@@ -438,8 +445,9 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + iconSvg(e.icon, t.blue) + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
       }).join('') + '</div></section>';
     }
-    if (sh.dress !== false && S.dress && (S.dress.women || S.dress.men || (S.dress.colors || []).length)) {
-      h += '<section class="pg"><h2 class="t1 script">पोशाख</h2>' + ((S.dress.women || S.dress.men) ? '<div class="dc"><div><b>महिला</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.women)) + '</div></div><div><b>पुरुष</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.men)) + '</div></div></div>' : '') +
+    var dI = [1, 2, 3].map(function (n) { var o = IM['dress' + n]; return o && o.d ? { src: o.d, cap: (S.dress || {})['cap' + n] || '' } : null; }).filter(Boolean);
+    if (sh.dress !== false && S.dress && (dI.length || S.dress.women || S.dress.men || (S.dress.colors || []).length)) {
+      h += '<section class="pg"><h2 class="t1 script">पोशाख</h2>' + (dI.length ? '<div class="dimgs n' + dI.length + '">' + dI.map(function (x) { return '<figure><img src="' + esc(x.src) + '" alt="' + esc(N(x.cap)) + '" loading="lazy">' + (x.cap ? '<figcaption>' + esc(N(x.cap)) + '</figcaption>' : '') + '</figure>'; }).join('') + '</div>' : '') + ((S.dress.women || S.dress.men) ? '<div class="dc"><div><b>महिला</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.women)) + '</div></div><div><b>पुरुष</b><div class="script" style="font-size:1.05rem">' + esc(N(S.dress.men)) + '</div></div></div>' : '') +
         ((S.dress.colors || []).length ? '<p class="script" style="font-size:1.2rem;margin-top:8px">सुचवलेले रंग</p><div class="sw">' + S.dress.colors.map(function (c) { return '<div><i style="background:' + esc(c.c) + '"></i>' + esc(N(c.n)) + '</div>'; }).join('') + '</div>' : '') + '</section>';
     }
     if (sh.gallery !== false && S.photos && S.photos.length) {
@@ -564,6 +572,14 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         return '<div class="e-item">' + itemHead('events', i) + row(LF('events', i, 'time', 'वेळ', e.time), iconSel(i, e.icon)) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
       }).join('') : '<p class="e-h">अजून कार्यक्रम नाहीत.</p>') + '<button class="e-btn" type="button" data-act="add" data-l="events">+ कार्यक्रम जोडा</button>');
     } else if (k === 'dress') {
+      var DI = S.img || {};
+      h += card('पोशाखाचे फोटो (२-३)', '<p class="e-h" style="margin-bottom:10px">पोशाख पानावर हे फोटो शेजारी-शेजारी दिसतात. फोटो उभा (३:४) असला तर उत्तम. फोटोखाली लिहायचे नाव बदलता येते.</p>' + [1, 2, 3].map(function (n) {
+        var o = DI['dress' + n];
+        return '<div class="e-item"><div class="e-item-h"><b>फोटो ' + n + '</b></div>' +
+          '<div class="e-f"><label for="im-dress' + n + '">फोटो निवडा</label><input id="im-dress' + n + '" type="file" accept="image/*" data-img="dress' + n + '"></div>' +
+          (o && o.d ? '<div class="e-imgprev"><img src="' + esc(o.d) + '" alt=""><button class="e-btn s" type="button" data-act="rmimg" data-k="dress' + n + '">काढा</button></div>' : '<p class="e-h">अजून निवडलेले नाही.</p>') +
+          F('फोटोखालील नाव', 'dress.cap' + n) + '</div>';
+      }).join(''));
       h += card('पोशाख', F('महिलांसाठी', 'dress.women') + F('पुरुषांसाठी', 'dress.men'));
       h += card('सुचवलेले रंग', ((S.dress.colors || []).map(function (c, i) { return '<div class="e-item">' + itemHead('dress.colors', i) + row(LF('dress.colors', i, 'n', 'रंगाचे नाव', c.n), '<div class="e-f"><label for="c-' + i + '">रंग</label><input id="c-' + i + '" type="color" data-l="dress.colors" data-i="' + i + '" data-f="c" value="' + esc(c.c) + '"></div>') + '</div>'; }).join('')) + '<button class="e-btn" type="button" data-act="add" data-l="dress.colors">+ रंग जोडा</button>');
     } else if (k === 'photos') {
@@ -760,7 +776,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var two = key === 'bg' || key === 'coverbg' || key === 'envbg', p;
     if (key === 'edge') p = shrink(file, 300, 1, true).then(function (d) { return { d: d }; });
     else if (two) p = Promise.all([shrink(file, 2000, 0.8), shrink(file, 1600, 0.75, false, 9 / 16)]).then(function (r) { return { d: r[0], m: r[1] }; });
-    else p = shrink(file, key === 'couple' ? 1000 : 1200, 0.8).then(function (d) { return { d: d }; });
+    else p = shrink(file, key === 'couple' ? 1000 : (key.indexOf('dress') === 0 ? 900 : 1200), 0.8).then(function (d) { return { d: d }; });
     p.then(function (o) { S.img = S.img || {}; S.img[key] = o; markDirty(); renderTab(); setStatus('चित्र जोडले. जतन न केलेले बदल आहेत'); }, function () { toast('हे चित्र वाचता आले नाही. दुसरे निवडा.'); setStatus(''); });
   }
   function addPhotos(files) {
@@ -816,7 +832,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
   function hash8(s) { var h = 2166136261; for (var i = 0; i < s.length; i += 7) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
   async function hostImages() {
-    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], edge: ['edge.png'], couple: ['couple.jpg'], venue: ['venue.jpg'] };
+    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], edge: ['edge.png'], couple: ['couple.jpg'], venue: ['venue.jpg'], dress1: ['dress-1.jpg'], dress2: ['dress-2.jpg'], dress3: ['dress-3.jpg'] };
     var v = Date.now().toString(36), IM = S.img || {}, FL = ['d', 'm'], key, i, j, o, mm, path;
     for (key in NAMES) {
       o = IM[key]; if (!o) continue;

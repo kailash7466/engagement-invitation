@@ -134,7 +134,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .tl .tm { font-size: 1.4rem; font-style: italic; color: var(--wine); line-height: 1.2; overflow-wrap: anywhere; }
 .tl .nm { font-family: var(--ui); font-weight: 700; font-size: .85rem; color: var(--blue); overflow-wrap: anywhere; }
 .tl .ds { font-size: .88rem; color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
-.tl .ic { width: 34px; height: 34px; margin-bottom: 2px; }
+.tl .ic { width: 38px; height: 38px; object-fit: contain; margin-bottom: 2px; }
 .tl .it .a .ic { margin-left: auto; } .tl .it.flip .a .ic { margin-left: 0; }
 .sw { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
 .sw div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--ui); font-size: .78rem; color: var(--muted); width: 60px; text-align: center; overflow-wrap: anywhere; }
@@ -461,7 +461,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       '<svg class="seams" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="' + t.gold + '" fill="none" stroke-width="1" vector-effect="non-scaling-stroke"><path d="M0 0L50 50L100 0M0 100L50 50L100 100M0 0L50 50L0 100M100 0L50 50L100 100" vector-effect="non-scaling-stroke"/></g></svg>' +
       '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div>' + sealSvg(t) + '<div class="tap">उघडण्यासाठी टॅप करा</div></div>';
     }
-    h += '<div class="flora l' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="flora r' + (hasEdge ? ' has' : '') + '">' + (hasEdge ? '' : floraSvg(t)) + '</div><div class="col" id="col">';
+    h += '<div class="flora l' + (hasEdge ? ' has' : '') + '">' + '</div><div class="flora r' + (hasEdge ? ' has' : '') + '">' + '</div><div class="col" id="col">';
 
     h += '<section class="pg' + (hasCv ? ' cov' : '') + '"><div class="rise" style="display:contents">' +
       (IM.couple && IM.couple.d ? '<div class="oval couple"><img src="' + esc(IM.couple.d) + '" alt=""></div>' : '') +
@@ -478,14 +478,14 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     }
     if (sh.venue !== false && (S.venue || S.addr)) {
       h += '<section class="pg"><h2 class="t1 script">' + (WED ? 'विवाह स्थळ' : 'साखरपुडा स्थळ') + '</h2>' +
-        (IM.venue && IM.venue.d ? '<img class="venue-img" src="' + esc(IM.venue.d) + '" alt="">' : '<svg class="venue-art" viewBox="0 0 270 190" aria-hidden="true"><g fill="none" stroke="' + t.blue + '" stroke-width="1.4" stroke-linejoin="round"><path d="M20 170h230" stroke="' + t.gold + '"/><path d="M40 170V92h40v78M190 170V92h40v78M80 170V70h110v100" fill="' + hexA(t.rose, .5) + '"/><path d="M112 70V40l23-22 23 22v30" fill="' + hexA(t.rose, .7) + '"/><path d="M135 18v-8M131 12h8" stroke="' + t.gold + '"/><path d="M120 170v-44a15 15 0 0 1 30 0v44" fill="' + hexA(t.gold, .35) + '"/><path d="M96 98h14M160 98h14M96 122h14M160 122h14"/><path d="M40 92l20-18 20 18M190 92l20-18 20 18"/><path d="M105 170v6h60v-6M95 176v6h80v-6" stroke="' + t.gold + '"/><circle cx="22" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M22 154v16"/><circle cx="248" cy="140" r="14" fill="' + hexA(t.leaf[0], .45) + '"/><path d="M248 154v16"/></g></svg>') +
+        (IM.venue && IM.venue.d ? '<img class="venue-img" src="' + esc(IM.venue.d) + '" alt="">' : '') +
         '<div class="pin"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="' + t.accent + '" stroke-width="1.6"><path d="M9 16s5-4.6 5-8.5a5 5 0 0 0-10 0C4 11.4 9 16 9 16z"/><circle cx="9" cy="7.5" r="1.8"/></svg></div>' +
         (S.venue ? '<h3 class="t2 script" style="margin:0">' + esc(N(S.venue)) + '</h3>' : '') + (S.addr ? '<p class="sub">' + esc(N(S.addr)) + '</p>' : '') +
         '<a class="dir" href="' + esc(mapUrl) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="' + t.blue + '" stroke-width="1.6" stroke-linejoin="round"><path d="M3 10l16-7-7 16-2-7z"/></svg><span><b>दिशा मिळवा</b><small>Google Maps मध्ये उघडा</small></span></a></section>';
     }
     if (sh.timeline !== false && S.events && S.events.length) {
       h += '<section class="pg"><h2 class="t2 script">आम्ही तुमच्यासाठी काय नियोजित केले आहे</h2><div class="tl">' + S.events.map(function (e, i) {
-        return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + iconSvg(e.icon, t.blue) + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
+        return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + (e.img ? '<img class="ic" src="' + esc(e.img) + '" alt="">' : '') + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
       }).join('') + '</div></section>';
     }
     var dI = [1, 2, 3].map(function (n) { var o = IM['dress' + n]; return o && o.d ? { src: o.d, cap: (S.dress || {})['cap' + n] || '' } : null; }).filter(Boolean);
@@ -613,7 +613,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('विवाह स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
     } else if (k === 'events') {
       h += card('कार्यक्रमांची वेळरेषा', (S.events.length ? S.events.map(function (e, i) {
-        return '<div class="e-item">' + itemHead('events', i) + row(LF('events', i, 'time', 'वेळ', e.time), iconSel(i, e.icon)) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
+        return '<div class="e-item">' + itemHead('events', i) + LF('events', i, 'time', 'वेळ', e.time) + evImg(i, e) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
       }).join('') : '<p class="e-h">अजून कार्यक्रम नाहीत.</p>') + '<button class="e-btn" type="button" data-act="add" data-l="events">+ कार्यक्रम जोडा</button>');
     } else if (k === 'dress') {
       var DI = S.img || {};
@@ -675,6 +675,10 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += shareHtml();
     }
     return h;
+  }
+  function evImg(i, e) {
+    return '<div class="e-f"><label for="ev-img-' + i + '">चिन्ह / चित्र (ऐच्छिक, लहान PNG चांगले)</label><input id="ev-img-' + i + '" type="file" accept="image/*" data-evimg="' + i + '">' +
+      (e.img ? '<div class="e-imgprev"><img src="' + esc(e.img) + '" alt="" style="max-height:60px;width:auto"><button class="e-btn s" type="button" data-act="rmevimg" data-i="' + i + '">काढा</button></div>' : '<span class="e-h">अजून निवडलेले नाही. निवडले नाही तर चिन्ह दिसणार नाही.</span>') + '</div>';
   }
   function iconSel(i, cur) {
     return '<div class="e-f"><label for="l-events-' + i + '-icon">चिन्ह</label><select id="l-events-' + i + '-icon" data-l="events" data-i="' + i + '" data-f="icon">' + Object.keys(ICONS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + ICONS[k] + '</option>'; }).join('') + '</select></div>';
@@ -756,6 +760,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   root.addEventListener('input', function (e) { if (mode === 'edit') onField(e.target, false); });
   root.addEventListener('change', function (e) { if (mode === 'edit') onField(e.target, true); });
   function onField(t, isChange) {
+    if (t.dataset.evimg) { if (isChange && t.files && t.files[0]) { var ei = +t.dataset.evimg; setStatus('चित्र तयार होत आहे…'); shrink(t.files[0], 160, 0.9, true).then(function (d) { S.events[ei].img = d; markDirty(); renderTab(); }, function () { toast('हे चित्र वाचता आले नाही'); }); } return; }
     if (t.dataset.img) { if (isChange && t.files && t.files[0]) addImage(t.dataset.img, t.files[0]); return; }
     if (t.id === 'ph-file' || t.id === 'mu-file') { if (isChange) (t.id === 'ph-file' ? addPhotos(t.files) : addSong(t.files && t.files[0])); return; }
     if (t.dataset.gh) { var s = ghStore(); s[t.dataset.gh] = t.value.trim(); ls.set('mn-gh', JSON.stringify(s)); return; }
@@ -797,6 +802,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       markDirty(); renderNotes(); renderTab();
     } else if (act === 'draftyes') { try { S = Object.assign(clone(DEF), JSON.parse(ls.get('mn-draft'))); } catch (x) {} draftNote = ''; dirty = true; renderNotes(); renderTab(); setStatus('मसुदा परत आणला'); }
     else if (act === 'draftno') { ls.del('mn-draft'); draftNote = ''; renderNotes(); }
+    else if (act === 'rmevimg') { delete S.events[+b.dataset.i].img; markDirty(); renderTab(); }
     else if (act === 'rmimg') { if (S.img) delete S.img[b.dataset.k]; markDirty(); renderTab(); }
     else if (act === 'rmsong') { S.music.src = ''; S.music.name = ''; S.music.size = 0; markDirty(); renderTab(); }
     else if (act === 'addguests') {

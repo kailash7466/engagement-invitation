@@ -213,30 +213,19 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env .fpatch { display: none; }
 #env.hasimg .fpatch { display: block; position: absolute; inset: 0; clip-path: var(--fcp, polygon(0 0)); pointer-events: none; }
 #env .fpatch svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-#env .ftint { display: none; }
-#env.hasimg .ftint { display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: multiply; transition: opacity .9s ease .35s; }
-#env.hasimg .ftint.l { clip-path: var(--ftl, polygon(0 0)); background: linear-gradient(115deg, rgba(255, 252, 244, .95) 0%, rgba(253, 246, 228, .9) 60%, rgba(255, 251, 238, .85) 100%); }
-#env.hasimg .ftint.r { clip-path: var(--ftr, polygon(0 0)); background: linear-gradient(245deg, rgba(255, 252, 244, .95) 0%, rgba(253, 246, 228, .9) 60%, rgba(255, 251, 238, .85) 100%); }
-#env.hasimg.open .ftint { opacity: 1; }
 #env.hasimg .fpatch .fpin { transform: translateY(-12%); transition: none; }
 #env .gw, #env .fw { position: absolute; inset: 0; }
 #env .gw, #env .fw, #env .fin { display: none; }
 #env.hasimg .gw, #env.hasimg .fw, #env.hasimg .fin { display: block; }
-#env.hasimg { transition: opacity .9s ease; transform-origin: 50% 92%; }
-#env.hasimg.open { animation: envZoom 4s cubic-bezier(.4, 0, .25, 1) forwards; }
-@keyframes envZoom { 0%, 45% { transform: scale(1); } 100% { transform: scale(1.3); } }
-@keyframes fwOpen { 0% { transform: perspective(1500px) rotateX(0deg); } 100% { transform: perspective(1500px) rotateX(-84deg); } }
-@keyframes gwOpen { 0% { filter: drop-shadow(0 0 8px rgba(255, 222, 140, .95)) drop-shadow(0 0 26px rgba(255, 190, 80, .75)) brightness(1); } 35% { filter: drop-shadow(0 0 6px rgba(255, 230, 170, .8)) drop-shadow(0 12px 14px rgba(95, 70, 30, .38)) brightness(1.05); } 100% { filter: drop-shadow(0 0 4px rgba(255, 240, 200, .5)) drop-shadow(0 10px 12px rgba(95, 70, 30, .3)) brightness(1.5); } }
-#env.hasimg.open .top, #env.hasimg.open .tap { opacity: 0; transition: opacity .6s ease; }
-#env.hasimg .gw { transition: filter .9s ease; }
+#env.hasimg { transition: opacity .9s ease; }
+#env.hasimg .gw { transition: filter .4s ease; }
 #env.hasimg.glow .gw { filter: drop-shadow(0 0 8px rgba(255, 222, 140, .95)) drop-shadow(0 0 26px rgba(255, 190, 80, .75)); }
-#env.hasimg .fw { transform-origin: 50% 0; transform-style: preserve-3d; }
-#env.hasimg.glow.open .gw { animation: gwOpen 2.8s cubic-bezier(.5, 0, .3, 1) forwards; }
-#env.hasimg.open .fw { animation: fwOpen 2.8s cubic-bezier(.5, 0, .3, 1) forwards; }
+#env.hasimg .fw { transform-origin: 50% 0; transform-style: preserve-3d; transition: transform 1.3s cubic-bezier(.55, 0, .25, 1); }
+#env.hasimg.open .fw { transform: perspective(1200px) rotateX(-180deg); }
 #env.hasimg .ft { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: none; }
 #env.hasimg.open .ft { transform: none; }
 #env.hasimg .fk { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); background: linear-gradient(180deg, #e3d4b6, #f8f2e6 60%); transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-#env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(55% 22% at 50% var(--fa, 48%), rgba(125, 95, 50, .32) 0%, rgba(125, 95, 50, 0) 100%), radial-gradient(90% 55% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(180deg, #fdf8ea 0%, #f6e9c9 70%, #ecd8ab 100%); }
+#env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(120% 90% at 50% 0%, #b79d6c 0%, #dcc9a3 38%, #f3eada 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
@@ -446,15 +435,12 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (fseal > 0 && fseal < 48) {
       sealP = [[50 - fseal, ym], [50 - fseal * 0.97, ym + (flap - ym) * 0.55], [50 - fseal * 0.6, ym + (flap - ym) * 0.88], [50, flap], [50 + fseal * 0.6, ym + (flap - ym) * 0.88], [50 + fseal * 0.97, ym + (flap - ym) * 0.55], [50 + fseal, ym]];
       flapP = [[0, fside]].concat(sealP, [[100, fside]]);
-      if (xc < 50 - fseal + 4 && xc > 5) { var ap = [[50 - 8, fapex + 3.6], [50 - 5, fapex + 1.4], [50 - 2.2, fapex + 0.3], [50 + 2.2, fapex + 0.3], [50 + 5, fapex + 1.4], [50 + 8, fapex + 3.6]]; creamP = [[0, fside], [xc, yc]].concat(ap, [[100 - xc, yc], [100, fside]]); patchP = sealP.concat([[100 - xc, yc]], ap.slice().reverse(), [[xc, yc]]); }
+      if (xc < 50 - fseal + 4 && xc > 5) { creamP = [[0, fside], [xc, yc], [50, fapex], [100 - xc, yc], [100, fside]]; patchP = sealP.concat([[100 - xc, yc], [50, fapex], [xc, yc]]); }
       else creamP = [[0, fside], [50, flap], [100, fside]];
     } else { flapP = [[0, fside], [50, flap], [100, fside]]; creamP = flapP; }
     vs.push('--fc:polygon(0 0,100% 0,' + cut(flapP.slice().reverse(), 0) + ')'); vs.push('--fci:polygon(0 0,100% 0,' + cut(creamP.slice().reverse(), 2) + ')');
     vs.push('--fcb:polygon(' + cut(flapP, -2) + ',100% 100%,0 100%)'); vs.push('--fd:' + flap + '%');
     if (patchP) vs.push('--fcp:polygon(' + cut(patchP, 0) + ')');
-    var yb = Math.min(99, fapex + 50 * 0.45); vs.push('--fa:' + fapex + '%');
-    vs.push('--ftl:polygon(0 ' + fside + '%,' + xc.toFixed(1) + '% ' + yc.toFixed(1) + '%,0 ' + yb.toFixed(1) + '%)'); vs.push('--ftr:polygon(100% ' + fside + '%,' + (100 - xc).toFixed(1) + '% ' + yc.toFixed(1) + '%,100% ' + yb.toFixed(1) + '%)');
-    var tintHtml = (fseal > 0 && fseal < 48) ? '<div class="ftint l"></div><div class="ftint r"></div>' : '';
     var patchHtml = patchP ? '<div class="fpatch"><div class="fl fpin"></div><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"><path d="M50 ' + fapex + 'L' + (50 - 24).toFixed(1) + ' ' + (fapex + 24 * 0.45).toFixed(1) + 'M50 ' + fapex + 'L' + (50 + 24).toFixed(1) + ' ' + (fapex + 24 * 0.45).toFixed(1) + '" stroke="rgba(70,55,40,.28)" stroke-width="3" transform="translate(0 .35)" vector-effect="non-scaling-stroke"/><path d="M50 ' + fapex + 'L' + (50 - 24).toFixed(1) + ' ' + (fapex + 24 * 0.45).toFixed(1) + 'M50 ' + fapex + 'L' + (50 + 24).toFixed(1) + ' ' + (fapex + 24 * 0.45).toFixed(1) + '" stroke="rgba(255,255,255,.8)" stroke-width="1.6" vector-effect="non-scaling-stroke"/></g></svg></div>' : '';
     vs.push('--bgpos:' + (['top', 'center', 'bottom'].indexOf(BX.pos) >= 0 ? BX.pos : 'center'));
     var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
@@ -462,7 +448,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (IM.bg && IM.bg.d) h += '<div class="bgfix"></div><div class="bgov"></div>';
     if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
     if (hasEnv) {
-      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + tintHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
+      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
         (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
     } else {
       h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
@@ -544,7 +530,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic();
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
-      var T = still ? [0, 0, 60] : (pic ? [700, 4300, 5300] : [0, 850, 1450]);
+      var T = still ? [0, 0, 60] : (pic ? [300, 1650, 2650] : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); }, T[1]));

@@ -215,22 +215,24 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env .fpatch svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 #env .ftint { display: none; }
 #env.hasimg .ftint { display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: multiply; transition: opacity .9s ease .35s; }
-#env.hasimg .ftint.l { clip-path: var(--ftl, polygon(0 0)); background: linear-gradient(115deg, rgba(240, 190, 105, .95) 0%, rgba(226, 168, 80, .9) 55%, rgba(246, 214, 150, .75) 100%); }
-#env.hasimg .ftint.r { clip-path: var(--ftr, polygon(0 0)); background: linear-gradient(245deg, rgba(240, 190, 105, .95) 0%, rgba(226, 168, 80, .9) 55%, rgba(246, 214, 150, .75) 100%); }
+#env.hasimg .ftint.l { clip-path: var(--ftl, polygon(0 0)); background: linear-gradient(115deg, rgba(255, 249, 232, .95) 0%, rgba(250, 238, 208, .9) 60%, rgba(255, 247, 226, .85) 100%); }
+#env.hasimg .ftint.r { clip-path: var(--ftr, polygon(0 0)); background: linear-gradient(245deg, rgba(255, 249, 232, .95) 0%, rgba(250, 238, 208, .9) 60%, rgba(255, 247, 226, .85) 100%); }
 #env.hasimg.open .ftint { opacity: 1; }
 #env.hasimg .fpatch .fpin { transform: translateY(-12%); transition: none; }
 #env .gw, #env .fw { position: absolute; inset: 0; }
 #env .gw, #env .fw, #env .fin { display: none; }
 #env.hasimg .gw, #env.hasimg .fw, #env.hasimg .fin { display: block; }
-#env.hasimg { transition: opacity .9s ease; }
-#env.hasimg .gw { transition: filter .4s ease; }
+#env.hasimg { transition: opacity .9s ease, transform 3.6s cubic-bezier(.3, .1, .3, 1); transform-origin: 50% 35%; }
+#env.hasimg.open { transform: scale(1.07); }
+#env.hasimg .gw { transition: filter .9s ease; }
 #env.hasimg.glow .gw { filter: drop-shadow(0 0 8px rgba(255, 222, 140, .95)) drop-shadow(0 0 26px rgba(255, 190, 80, .75)); }
-#env.hasimg .fw { transform-origin: 50% 0; transform-style: preserve-3d; transition: transform 1.3s cubic-bezier(.55, 0, .25, 1); }
+#env.hasimg .fw { transform-origin: 50% 0; transform-style: preserve-3d; transition: transform 1.6s cubic-bezier(.5, 0, .25, 1); }
+#env.hasimg.glow.open .gw { filter: drop-shadow(0 0 6px rgba(255, 230, 170, .8)) drop-shadow(0 14px 14px rgba(95, 70, 30, .38)); }
 #env.hasimg.open .fw { transform: perspective(1200px) rotateX(-180deg); }
 #env.hasimg .ft { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: none; }
 #env.hasimg.open .ft { transform: none; }
 #env.hasimg .fk { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); background: linear-gradient(180deg, #e3d4b6, #f8f2e6 60%); transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-#env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(60% 24% at 50% var(--fa, 48%), rgba(150, 96, 30, .55) 0%, rgba(150, 96, 30, 0) 100%), linear-gradient(180deg, #f6dc9d 0%, #e9bb6a 55%, #d7a050 100%); }
+#env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(60% 24% at 50% var(--fa, 48%), rgba(120, 85, 35, .4) 0%, rgba(120, 85, 35, 0) 100%), linear-gradient(180deg, #fffdf7 0%, #faf0d8 40%, #f0dcaf 78%, #e6c98e 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
@@ -538,7 +540,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic();
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
-      var T = still ? [0, 0, 60] : (pic ? [300, 1650, 2650] : [0, 850, 1450]);
+      var T = still ? [0, 0, 60] : (pic ? [900, 3000, 4000] : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); }, T[1]));

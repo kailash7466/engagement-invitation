@@ -535,7 +535,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     h += '<section class="pg' + (hasCv ? ' cov' : '') + '"><div class="rise" style="display:contents">' +
       (IM.couple && IM.couple.d ? '<div class="oval couple"><img src="' + esc(IM.couple.d) + '" alt=""></div>' : '') +
       (S.tagline ? '<p class="kick">' + esc(N(S.tagline)) + '</p>' : '<span></span>') + '<h2 class="t2 script">' + esc(N(S.headline)) + '</h2>' +
-      '<h1 class="t1 script" style="margin:0">' + esc(N(S.groom)) + '</h1><div class="script" style="font-size:1.5rem">आणि</div><h1 class="t1 script" style="margin:0">' + esc(N(S.bride)) + '</h1>' +
+      (sh.names === true ? '<h1 class="t1 script" style="margin:0">' + esc(N(S.groom)) + '</h1><div class="script" style="font-size:1.5rem">आणि</div><h1 class="t1 script" style="margin:0">' + esc(N(S.bride)) + '</h1>' : '') +
       '<div class="rule"></div>' + (S.message ? '<p class="sub">' + esc(N(S.message)) + '</p>' : '') + '</div></section>';
 
     if (sh.family !== false && (S.gpar || S.bpar)) {
@@ -762,7 +762,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     } else if (k === 'look') {
       h += card('रंगसंगती', '<div class="e-seg" role="radiogroup">' + Object.keys(TH).map(function (id) { var t = TH[id]; return '<input type="radio" id="th-' + id + '" name="theme" data-k="theme" value="' + id + '"' + (S.theme === id ? ' checked' : '') + '><label for="th-' + id + '"><span class="e-sw" style="background:linear-gradient(135deg,' + t.paper + ' 55%,' + t.accent + ' 55%)"></span>' + t.n + '</label>'; }).join('') + '</div>');
       h += card('अंक', seg('digits', [['mr', 'मराठी (०१२३)'], ['en', 'इंग्रजी (0123)']]));
-      h += card('कोणती पाने दाखवायची', chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'विवाह स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी'));
+      h += card('कोणती पाने दाखवायची', '<label class="e-chk"><input type="checkbox" data-k="show.names"' + ((S.show || {}).names === true ? ' checked' : '') + '> पहिल्या पानावर वर-वधूची नावे दाखवा</label>' + chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'विवाह स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी'));
     } else if (k === 'share') {
       h += shareHtml();
     }

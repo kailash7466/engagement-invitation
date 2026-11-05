@@ -298,6 +298,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     faq: [],
     host: 'देशमुख व कुलकर्णी परिवार', closing: 'आपल्या आगमनाची आतुरतेने वाट पाहत आहोत',
+    cd: { title: 'उलटगणती', sub: 'या क्षणाची आम्ही आतुरतेने वाट पाहत आहोत', btn: 'सोहळ्याची तारीख पाहण्यासाठी येथे टॅप करा', confetti: true, tap: true },
     show: { family: true, countdown: true, venue: true, timeline: true, dress: true, gallery: true, faq: false },
     shareUrl: '',
     guests: [{ id: 'gsharma', name: 'श्री. शर्मा परिवार' }, { id: 'gjoshi', name: 'सौ. व श्री. जोशी' }]
@@ -541,10 +542,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += '<section class="pg"><p class="script" style="font-size:1.1rem">॥ श्री गणेशाय नमः ॥</p><div class="lbl">वर</div><div class="t1 script">चि. ' + esc(N(S.groom)) + '</div>' + (S.gpar ? '<p class="par">' + esc(N(S.gpar)) + '<br>यांचे चिरंजीव</p>' : '') +
         '<div class="rule"></div><div class="lbl">वधू</div><div class="t1 script">चि.सौ.कां. ' + esc(N(S.bride)) + '</div>' + (S.bpar ? '<p class="par">' + esc(N(S.bpar)) + '<br>यांची कन्या</p>' : '') + '</section>';
     }
+    var CD = S.cd || DEF.cd;
     if (sh.countdown !== false && dm && tm) {
-      h += '<section class="pg" id="cdsec"><h2 class="t1 script">उलटगणती</h2><p class="sub">या क्षणाची आम्ही आतुरतेने वाट पाहत आहोत</p>' +
-        '<button type="button" class="cdbtn" id="cdbtn" aria-label="तारीख पाहण्यासाठी टॅप करा"><span class="cdb-ic" aria-hidden="true">✦</span><span class="cdb-t">सोहळ्याची तारीख पाहण्यासाठी येथे टॅप करा</span></button>' +
-        '<div class="cdrev" id="cdrev" hidden><div class="cdate" aria-label="' + esc(dtxt) + '"><b class="cdd">' + esc(N(dm[3])) + '</b><span class="cdmn">' + esc(MON[+dm[2] - 1]) + '</span><span class="cdyr">' + esc(N(dm[1])) + '</span></div>' +
+      h += '<section class="pg" id="cdsec"><h2 class="t1 script">' + esc(N(CD.title)) + '</h2>' + (CD.sub ? '<p class="sub">' + esc(N(CD.sub)) + '</p>' : '') +
+        (CD.tap !== false ? '<button type="button" class="cdbtn" id="cdbtn" aria-label="' + esc(CD.btn) + '"><span class="cdb-ic" aria-hidden="true">✦</span><span class="cdb-t">' + esc(N(CD.btn)) + '</span></button>' : '') +
+        '<div class="cdrev" id="cdrev"' + (CD.tap !== false ? ' hidden' : '') + '><div class="cdate" aria-label="' + esc(dtxt) + '"><b class="cdd">' + esc(N(dm[3])) + '</b><span class="cdmn">' + esc(MON[+dm[2] - 1]) + '</span><span class="cdyr">' + esc(N(dm[1])) + '</span></div>' +
         '<div class="count" id="cd"><div><b id="c-d">०</b><span>दिवस</span></div><div><b id="c-h">०</b><span>तास</span></div><div><b id="c-m">०</b><span>मिनिटे</span></div><div><b id="c-s">०</b><span>सेकंद</span></div></div><p class="script" id="c-msg" style="font-size:1.2rem"></p></div></section>';
     }
     if (sh.venue !== false && (S.venue || S.addr)) {
@@ -637,12 +639,12 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       tick(); timers.push(setInterval(tick, 1000));
     }
     if ($('cdbtn')) {
-      var cfStop = null;
+      var cfStop = null, CD = S.cd || DEF.cd;
       $('cdbtn').onclick = function () {
         var r = $('cdbtn').getBoundingClientRect(), tt = TH[S.theme] || TH.ivory;
         $('cdbtn').hidden = true; $('cdrev').hidden = false;
         if (cfStop) cfStop();
-        cfStop = confetti(Math.max(20, Math.min(window.innerWidth - 20, r.left + r.width / 2)), Math.max(40, Math.min(window.innerHeight - 40, r.top + r.height / 2)), [tt.gold, tt.accent, tt.blue, '#ffffff', '#f4c95d', '#e9768a', '#7fb7a4']);
+        if (CD.confetti !== false) cfStop = confetti(Math.max(20, Math.min(window.innerWidth - 20, r.left + r.width / 2)), Math.max(40, Math.min(window.innerHeight - 40, r.top + r.height / 2)), [tt.gold, tt.accent, tt.blue, '#ffffff', '#f4c95d', '#e9768a', '#7fb7a4']);
       };
       cleanups.push(function () { if (cfStop) cfStop(); });
     }
@@ -694,7 +696,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (k === 'basics') {
       h += card('कार्यक्रम प्रकार', seg('type', [['wedding', 'विवाह'], ['engagement', 'साखरपुडा']]));
       h += card('वर आणि वधू', row(F('वराचे नाव', 'groom'), F('वधूचे नाव', 'bride')) + row(F('वराचे आई-वडील', 'gpar', { hint: '‘यांचे चिरंजीव’ आपोआप लागेल' }), F('वधूचे आई-वडील', 'bpar', { hint: '‘यांची कन्या’ आपोआप लागेल' })));
-      h += card('तारीख आणि वेळ', row(F('तारीख', 'date', { type: 'date', attr: 'min="2020-01-01" max="2099-12-31"' }), F('मुहूर्ताची वेळ', 'time', { type: 'time' })) + (S.date && !/^\d{4}-\d{2}-\d{2}$/.test(S.date) ? '<p class="e-h" style="color:#c0392b;font-weight:700">तारीख चुकीची आहे (वर्ष ४ अंकी हवे, उदा. २०२७). ती दुरुस्त करेपर्यंत उलटगणतीचे पान दिसणार नाही.</p>' : '<span class="e-h">उलटगणती याच तारखेवरून चालते.</span>'));
+      h += card('तारीख आणि वेळ', row(F('तारीख', 'date', { type: 'date', attr: 'min="2020-01-01" max="2099-12-31"' }), F('मुहूर्ताची वेळ', 'time', { type: 'time' })) + (S.date && !/^\d{4}-\d{2}-\d{2}$/.test(S.date) ? '<p class="e-h" style="color:#c0392b;font-weight:700">तारीख चुकीची आहे (वर्ष ४ अंकी हवे, उदा. २०२७). ती दुरुस्त करेपर्यंत उलटगणतीचे पान दिसणार नाही.</p>' : '<span class="e-h">उलटगणती याच तारखेवरून चालते.</span>')) +
+        card('उलटगणतीचे पान', chk('show.countdown', 'उलटगणतीचे पान दाखवा') + F('पानाचे शीर्षक', 'cd.title') + F('उपशीर्षक (रिकामे ठेवले तर दिसणार नाही)', 'cd.sub') + chk('cd.tap', 'आधी बॉक्स दाखवा, टॅप केल्यावरच तारीख व गणती दाखवा') + F('बॉक्सवरील मजकूर', 'cd.btn') + chk('cd.confetti', 'टॅप केल्यावर कॉन्फेटी उडवा'));
       h += card('मजकूर', F('वरची छोटी ओळ', 'tagline') + F('मुख्य ओळ', 'headline') + F('लखोट्यावरील ओळ', 'envLine', { hint: 'लखोटा उघडण्यापूर्वी दिसते' }) + F('छोटा संदेश (ऐच्छिक)', 'message', { area: 1, hint: 'पहिल्या पानावर तारखेखाली दिसेल' }));
     } else if (k === 'venue') {
       h += card('विवाह स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));

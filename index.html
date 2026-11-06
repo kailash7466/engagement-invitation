@@ -303,7 +303,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     img: {},
     snow: { on: true, amount: 90, speed: 4, size: 4, wind: 1, opacity: 85, color: 'white' },
     bgx: { overlay: 30, pos: 'center', vy: 25, sy: 55, sr: 14, ay: 48, envText: false },
-    tlPer: 2,
+    tlPer: 0,
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     sfx: { on: true, kind: 'chime', src: '', name: '', size: 0, vol: 70 },
     faq: [],
@@ -601,7 +601,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         '<a class="dir" href="' + esc(mapUrl) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="' + t.blue + '" stroke-width="1.6" stroke-linejoin="round"><path d="M3 10l16-7-7 16-2-7z"/></svg><span><b>दिशा मिळवा</b><small>Google Maps मध्ये उघडा</small></span></a></section>';
     }
     if (sh.timeline !== false && S.events && S.events.length) {
-      var per = Math.max(1, Math.min(6, parseInt(S.tlPer, 10) || 2)), evh = function (e, i) {
+      var per = parseInt(S.tlPer, 10) > 0 ? Math.min(6, parseInt(S.tlPer, 10)) : Math.max(1, S.events.length), evh = function (e, i) {
         return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + (e.img ? '<img class="ic" src="' + esc(e.img) + '" alt="">' : '') + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
       };
       for (var ci = 0; ci < S.events.length; ci += per) {
@@ -759,7 +759,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     } else if (k === 'venue') {
       h += card('विवाह स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
     } else if (k === 'events') {
-      h += card('कार्यक्रमांची वेळरेषा', '<div class="e-f"><label for="f-tlper">एका पानावर किती कार्यक्रम दाखवायचे</label><select id="f-tlper" data-k="tlPer">' + [1, 2, 3, 4].map(function (n) { return '<option value="' + n + '"' + ((parseInt(S.tlPer, 10) || 2) === n ? ' selected' : '') + '>' + n + (n === 1 ? ' (प्रत्येक कार्यक्रम वेगळे पान)' : '') + '</option>'; }).join('') + '</select><span class="e-h">प्रत्येक नवीन पानावर आवाज वाजतो.</span></div>' + (S.events.length ? S.events.map(function (e, i) {
+      h += card('कार्यक्रमांची वेळरेषा', '<div class="e-f"><label for="f-tlper">एका पानावर किती कार्यक्रम दाखवायचे</label><select id="f-tlper" data-k="tlPer">' + [0, 1, 2, 3, 4].map(function (n) { return '<option value="' + n + '"' + ((parseInt(S.tlPer, 10) || 0) === n ? ' selected' : '') + '>' + (n === 0 ? 'सगळे एकाच पानात' : n + (n === 1 ? ' (प्रत्येक कार्यक्रम वेगळे पान)' : '')) + '</option>'; }).join('') + '</select><span class="e-h">वेगळ्या पानांत दिले तर प्रत्येक नवीन पानावर आवाज वाजतो.</span></div>' + (S.events.length ? S.events.map(function (e, i) {
         return '<div class="e-item">' + itemHead('events', i) + LF('events', i, 'time', 'वेळ', e.time) + evImg(i, e) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
       }).join('') : '<p class="e-h">अजून कार्यक्रम नाहीत.</p>') + '<button class="e-btn" type="button" data-act="add" data-l="events">+ कार्यक्रम जोडा</button>');
     } else if (k === 'dress') {

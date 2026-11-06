@@ -303,6 +303,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     img: {},
     snow: { on: true, amount: 90, speed: 4, size: 4, wind: 1, opacity: 85, color: 'white' },
     bgx: { overlay: 30, pos: 'center', vy: 25, sy: 55, sr: 14, ay: 48, envText: false },
+    tlPer: 2,
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     sfx: { on: true, kind: 'chime', src: '', name: '', size: 0, vol: 70 },
     faq: [],
@@ -600,9 +601,12 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         '<a class="dir" href="' + esc(mapUrl) + '" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="' + t.blue + '" stroke-width="1.6" stroke-linejoin="round"><path d="M3 10l16-7-7 16-2-7z"/></svg><span><b>दिशा मिळवा</b><small>Google Maps मध्ये उघडा</small></span></a></section>';
     }
     if (sh.timeline !== false && S.events && S.events.length) {
-      h += '<section class="pg"><h2 class="t2 script">आम्ही तुमच्यासाठी काय नियोजित केले आहे</h2><div class="tl">' + S.events.map(function (e, i) {
+      var per = Math.max(1, Math.min(6, parseInt(S.tlPer, 10) || 2)), evh = function (e, i) {
         return '<div class="it' + (i % 2 ? ' flip' : '') + '"><div class="a">' + (e.img ? '<img class="ic" src="' + esc(e.img) + '" alt="">' : '') + '</div><div class="dot"></div><div class="b"><div class="tm">' + esc(N(e.time)) + '</div><div class="nm">' + esc(N(e.t)) + '</div>' + (e.d ? '<div class="ds">' + esc(N(e.d)) + '</div>' : '') + '</div></div>';
-      }).join('') + '</div></section>';
+      };
+      for (var ci = 0; ci < S.events.length; ci += per) {
+        h += '<section class="pg tlpg">' + (ci === 0 ? '<h2 class="t2 script">आम्ही तुमच्यासाठी काय नियोजित केले आहे</h2>' : '') + '<div class="tl">' + S.events.slice(ci, ci + per).map(function (e, j) { return evh(e, ci + j); }).join('') + '</div></section>';
+      }
     }
     var dI = [1, 2, 3].map(function (n) { var o = IM['dress' + n]; return o && o.d ? { src: o.d, cap: (S.dress || {})['cap' + n] || '' } : null; }).filter(Boolean);
     if (sh.dress !== false && S.dress && (dI.length || S.dress.women || S.dress.men || (S.dress.colors || []).length)) {
@@ -671,7 +675,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
           if (!en.isIntersecting) return; var i = pgs.indexOf(en.target); if (i < 0 || i === cur) return; cur = i;
           if (!muted) sfxPlay(S.sfx);
         });
-      }, { threshold: 0.6 });
+      }, { rootMargin: '-48% 0px -48% 0px', threshold: 0 });
       pgs.forEach(function (x) { io.observe(x); }); cleanups.push(function () { io.disconnect(); });
     }
     env.addEventListener('click', openEnv);
@@ -755,7 +759,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     } else if (k === 'venue') {
       h += card('विवाह स्थळ', F('स्थळाचे नाव', 'venue') + F('पत्ता', 'addr') + F('Google Maps लिंक (ऐच्छिक)', 'map', { type: 'url', mode: 'url', hint: 'Google Maps मध्ये ठिकाण उघडा, Share दाबा, लिंक कॉपी करा. रिकामे ठेवल्यास नाव आणि पत्त्यावरून आपोआप शोध लागेल.' }));
     } else if (k === 'events') {
-      h += card('कार्यक्रमांची वेळरेषा', (S.events.length ? S.events.map(function (e, i) {
+      h += card('कार्यक्रमांची वेळरेषा', '<div class="e-f"><label for="f-tlper">एका पानावर किती कार्यक्रम दाखवायचे</label><select id="f-tlper" data-k="tlPer">' + [1, 2, 3, 4].map(function (n) { return '<option value="' + n + '"' + ((parseInt(S.tlPer, 10) || 2) === n ? ' selected' : '') + '>' + n + (n === 1 ? ' (प्रत्येक कार्यक्रम वेगळे पान)' : '') + '</option>'; }).join('') + '</select><span class="e-h">प्रत्येक नवीन पानावर आवाज वाजतो.</span></div>' + (S.events.length ? S.events.map(function (e, i) {
         return '<div class="e-item">' + itemHead('events', i) + LF('events', i, 'time', 'वेळ', e.time) + evImg(i, e) + LF('events', i, 't', 'कार्यक्रमाचे नाव', e.t) + LF('events', i, 'd', 'छोटे वर्णन', e.d) + '</div>';
       }).join('') : '<p class="e-h">अजून कार्यक्रम नाहीत.</p>') + '<button class="e-btn" type="button" data-act="add" data-l="events">+ कार्यक्रम जोडा</button>');
     } else if (k === 'dress') {

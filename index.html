@@ -401,7 +401,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     } catch (e) {}
   }
   function sfxPlay(cfg) {
-    if (!cfg || cfg.on === false) return; var now = Date.now(); if (now - sfxLast < 350) return; sfxLast = now;
+    if (!cfg || cfg.on === false || !cfg.src) return; var now = Date.now(); if (now - sfxLast < 350) return; sfxLast = now;
     var vol = Math.max(0.02, Math.min(1, (+cfg.vol || 70) / 100));
     try {
       if (cfg.src) {
@@ -669,7 +669,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); startSfx(); }, T[2]));
     }
     function startSfx() {
-      if (!S.sfx || S.sfx.on === false || !('IntersectionObserver' in window)) return;
+      if (!S.sfx || S.sfx.on === false || !S.sfx.src || !('IntersectionObserver' in window)) return;
       var pgs = [].slice.call(document.querySelectorAll('#col .pg')), cur = 0, io = new IntersectionObserver(function (ents) {
         ents.forEach(function (en) {
           if (!en.isIntersecting) return; var i = pgs.indexOf(en.target); if (i < 0 || i === cur) return; var down = i > cur; cur = i;
@@ -809,11 +809,10 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     } else if (k === 'sfx') {
       var X = S.sfx || {};
       h += card('पान बदलताना आवाज', '<p class="e-h" style="margin-bottom:10px">पाहुण्याने खाली स्क्रोल करून नवीन पानावर आले की हा आवाज एकदा वाजेल. लखोटा उघडल्यानंतर सुरू होतो. गाणे बंद केले तर हा आवाजही बंद होतो.</p>' + chk('sfx.on', 'पान बदलताना आवाज वाजवा') +
-        '<div class="e-f"><label for="sf-file">आवाजाची फाइल (लहान MP3 / M4A / WAV, १–३ सेकंद)</label><input id="sf-file" type="file" accept="audio/*"><span class="e-h">फाइल निवडली नाही तर खालचा तयार आवाज वाजेल.</span></div>' +
-        F('किंवा आवाजाची थेट लिंक', 'sfx.src', { type: 'url', mode: 'url', hint: 'सार्वजनिक .mp3 लिंक.' }) +
-        (X.src ? '<div class="e-f"><label>सध्याचा आवाज: ' + esc(X.name || 'लिंकवरून') + '</label><audio controls src="' + esc(X.src) + '"></audio></div><button class="e-btn" type="button" data-act="rmsfx">फाइल काढा (तयार आवाज वापरा)</button>' : '<div class="e-f" style="margin-top:8px"><label for="sf-kind">तयार आवाज</label><select id="sf-kind" data-k="sfx.kind">' + [['chime', 'मंद घंटी'], ['soft', 'मऊ टिक'], ['paper', 'कागदाचा सरसराट']].map(function (c) { return '<option value="' + c[0] + '"' + (X.kind === c[0] ? ' selected' : '') + '>' + c[1] + '</option>'; }).join('') + '</select></div>') +
+        '<div class="e-f"><label for="sf-file">आवाजाची फाइल (लहान MP3 / M4A / WAV, १–३ सेकंद)</label><input id="sf-file" type="file" accept="audio/*"><span class="e-h">फाइल जोडली नाही तर पान बदलताना कोणताही आवाज वाजणार नाही.</span></div>' +
+        (X.src ? '<div class="e-f"><label>सध्याचा आवाज: ' + esc(X.name || 'फाइल') + '</label><audio controls src="' + esc(X.src) + '"></audio></div><button class="e-btn" type="button" data-act="rmsfx">आवाज काढा</button>' : '<p class="e-h">अजून आवाज निवडलेला नाही.</p>') +
         '<div class="e-f"><label for="sf-vol">आवाज किती मोठा: <b id="sv-sfxvol">' + (+X.vol || 70) + '</b>%</label><input id="sf-vol" type="range" min="5" max="100" step="5" data-k="sfx.vol" data-show="sv-sfxvol" value="' + (+X.vol || 70) + '"></div>' +
-        '<button class="e-btn" type="button" data-act="sfxtest">▶ आवाज ऐका</button>');
+        (X.src ? '<button class="e-btn" type="button" data-act="sfxtest">▶ आवाज ऐका</button>' : ''));
     } else if (k === 'music') {
       var m = S.music || {};
       h += card('गाणे', '<p class="e-h" style="margin-bottom:10px">लखोटा उघडण्यासाठी पाहुण्याने टॅप केल्यावर गाणे आपोआप सुरू होईल. खाली उजवीकडे आवाज बंद-चालू करण्याचे बटण असेल.</p>' +

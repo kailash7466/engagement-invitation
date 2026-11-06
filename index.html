@@ -672,8 +672,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       if (!S.sfx || S.sfx.on === false || !('IntersectionObserver' in window)) return;
       var pgs = [].slice.call(document.querySelectorAll('#col .pg')), cur = 0, io = new IntersectionObserver(function (ents) {
         ents.forEach(function (en) {
-          if (!en.isIntersecting) return; var i = pgs.indexOf(en.target); if (i < 0 || i === cur) return; cur = i;
-          if (!muted) sfxPlay(S.sfx);
+          if (!en.isIntersecting) return; var i = pgs.indexOf(en.target); if (i < 0 || i === cur) return; var down = i > cur; cur = i;
+          if (down && !muted) sfxPlay(S.sfx);
         });
       }, { rootMargin: '-48% 0px -48% 0px', threshold: 0 });
       pgs.forEach(function (x) { io.observe(x); }); cleanups.push(function () { io.disconnect(); });

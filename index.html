@@ -788,7 +788,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         return card(title, '<p class="e-h" style="margin-bottom:10px">' + hint + '</p><div class="e-f"><label for="im-' + key + '">फोटो निवडा</label><input id="im-' + key + '" type="file" accept="' + (png ? 'image/png,image/webp' : 'image/*') + '" data-img="' + key + '"></div>' +
           (o && o.d ? '<div class="e-imgprev"><img src="' + esc(o.d) + '" alt="">' + (o.m ? '<span class="e-h">मोबाईलसाठी उभी प्रत आपोआप बनली</span>' : '') + '<button class="e-btn s" type="button" data-act="rmimg" data-k="' + key + '">काढा</button></div>' : '<p class="e-h">अजून निवडलेले नाही.</p>'));
       };
-      h += slot('bg', 'सर्व पानांची पार्श्वभूमी', 'कोणताही फोटो चालेल. संगणकासाठी मोठी आणि मोबाईलसाठी उभी प्रत आपोआप बनते, तुम्हाला आकार बदलावा लागत नाही.');
+      h += slot('bg', 'सर्व पानांची पार्श्वभूमी', 'सुचवलेला आकार: ७६८ × १३६४ px (उभा, ९:१६). फोटो या आकाराचा असेल तर तो मोबाईलवर काहीही न कापता पूर्ण दिसतो. वेगळ्या आकाराचा फोटोही चालेल. संगणकासाठी मोठी आणि मोबाईलसाठी ७६८×१३६४ ची प्रत आपोआप बनते.');
       h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-fit">फोटो कसा बसवायचा</label><select id="f-fit" data-k="bgx.fit"><option value="full"' + (BX2.fit !== 'cover' ? ' selected' : '') + '>पूर्ण फोटो दिसेल (कडा कापल्या जाणार नाहीत)</option><option value="cover"' + (BX2.fit === 'cover' ? ' selected' : '') + '>पडदा भरून टाका (कडा थोड्या कापल्या जातील)</option></select><span class="e-h">पूर्ण फोटो निवडल्यास फोटोच्या बाजूला उरलेली जागा त्याच फोटोच्या धूसर रंगाने भरली जाते.</span></div><div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
         '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
       h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
@@ -998,7 +998,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   function addImage(key, file) {
     if (!file) return; setStatus('चित्र तयार होत आहे…');
     var two = key === 'bg' || key === 'coverbg' || key === 'envbg', p;
-    if (two) p = Promise.all([shrink(file, 2000, 0.8), shrink(file, 1600, 0.75, false, 9 / 16)]).then(function (r) { return { d: r[0], m: r[1] }; });
+    if (two) p = Promise.all([shrink(file, 2000, 0.8), (key === 'envbg' ? shrink(file, 1600, 0.75, false, 9 / 16) : shrink(file, 1364, 0.82, false, 768 / 1364))]).then(function (r) { return { d: r[0], m: r[1] }; });
     else p = shrink(file, key === 'couple' ? 1000 : (key.indexOf('dress') === 0 ? 900 : 1200), 0.8).then(function (d) { return { d: d }; });
     p.then(function (o) { S.img = S.img || {}; S.img[key] = o; markDirty(); renderTab(); setStatus('चित्र जोडले. जतन न केलेले बदल आहेत'); }, function () { toast('हे चित्र वाचता आले नाही. दुसरे निवडा.'); setStatus(''); });
   }

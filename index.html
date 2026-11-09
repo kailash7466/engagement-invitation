@@ -322,7 +322,6 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     snow: { on: true, amount: 90, speed: 4, size: 4, wind: 1, opacity: 85, color: 'white' },
     bgx: { overlay: 30, pos: 'center', vy: 25, sy: 55, sr: 14, ay: 48, envText: false },
     tlPer: 0,
-    sway: { on: true, speed: 4, amount: 4 },
     music: { src: '', name: '', size: 0, start: 0, auto: true },
     sfx: { on: true, kind: 'chime', src: '', name: '', size: 0, vol: 70 },
     faq: [],
@@ -584,7 +583,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var hasCv = !!(IM.coverbg && IM.coverbg.d), hasEnv = !!(IM.envbg && IM.envbg.d);
     var h = '<div id="vw" style="' + esc(vs.join(';')) + '">';
     var fitFull = BX.fit !== 'cover';
-    if (IM.bg && IM.bg.d) h += (fitFull ? '<div class="bgblur"></div>' : '') + '<div class="bgfix' + (fitFull ? ' full' : '') + '"></div>' + (S.sway && S.sway.on ? '<div class="bgsway' + (fitFull ? ' full' : '') + '" style="--swp:' + Math.max(1.6, 13 - 1.1 * Math.max(1, Math.min(10, +S.sway.speed || 4))).toFixed(2) + 's;--swa:' + (Math.max(1, Math.min(10, +S.sway.amount || 4)) * 0.18).toFixed(2) + '" aria-hidden="true"><div class="sw tl"></div><div class="sw tr"></div><div class="sw bl"></div><div class="sw br"></div></div>' : '') + '<div class="bgov"></div>';
+    if (IM.bg && IM.bg.d) h += (fitFull ? '<div class="bgblur"></div>' : '') + '<div class="bgfix' + (fitFull ? ' full' : '') + '"></div>' + '<div class="bgov"></div>';
     if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
     if (hasEnv) {
       h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
@@ -807,8 +806,6 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += slot('bg', 'सर्व पानांची पार्श्वभूमी', 'सुचवलेला आकार: ७६८ × १३६४ px (उभा, ९:१६). फोटो या आकाराचा असेल तर तो मोबाईलवर काहीही न कापता पूर्ण दिसतो. वेगळ्या आकाराचा फोटोही चालेल. संगणकासाठी मोठी आणि मोबाईलसाठी ७६८×१३६४ ची प्रत आपोआप बनते.');
       h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-fit">फोटो कसा बसवायचा</label><select id="f-fit" data-k="bgx.fit"><option value="full"' + (BX2.fit !== 'cover' ? ' selected' : '') + '>पूर्ण फोटो दिसेल (कडा कापल्या जाणार नाहीत)</option><option value="cover"' + (BX2.fit === 'cover' ? ' selected' : '') + '>पडदा भरून टाका (कडा थोड्या कापल्या जातील)</option></select><span class="e-h">पूर्ण फोटो निवडल्यास फोटोच्या बाजूला उरलेली जागा त्याच फोटोच्या धूसर रंगाने भरली जाते.</span></div><div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
         '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
-      var SW = S.sway || {}, SR = function (key, label, hint) { var v = +SW[key]; if (isNaN(v) || !v) v = DEF.sway[key]; return '<div class="e-f"><label for="sw-' + key + '">' + label + ': <b id="sv-sw' + key + '">' + v + '</b></label><input id="sw-' + key + '" type="range" min="1" max="10" step="1" data-k="sway.' + key + '" data-show="sv-sw' + key + '" value="' + v + '">' + (hint ? '<span class="e-h">' + hint + '</span>' : '') + '</div>'; };
-      h += card('फुलांची हालचाल', '<label class="e-chk"><input type="checkbox" data-k="sway.on"' + (SW.on !== false ? ' checked' : '') + '> पार्श्वभूमीवरील फुले-पाने हळू हलत ठेवा</label>' + SR('speed', 'हलण्याचा वेग (१ = हळू, १० = जलद)') + SR('amount', 'हालचाल किती (१ = थोडी, १० = जास्त)', 'फोटोच्या चारही कोपऱ्यांतील फुले-पाने वाऱ्यात झुलल्यासारखी हलतात. मधला मजकूर हलत नाही. पाहण्यासाठी वर ‘पूर्वावलोकन’ दाबा.') + '');
       h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
       h += slot('envbg', 'लखोटा (ऐच्छिक)', 'बंद लखोट्याचा फोटो (झाकण आणि सील असलेला). टॅप केल्यावर त्याचे वरचे त्रिकोणी झाकण सोनेरी चमकेसह वर उघडते आणि आत निमंत्रण दिसते.');
       var EP = envParams(BX2), SL = function (key, label, min, max, hint) { return '<div class="e-f"><label for="f-' + key + '">' + label + ': <b id="sv-' + key + '">' + EP[key] + '</b>%</label><input id="f-' + key + '" type="range" min="' + min + '" max="' + max + '" step="1" data-k="bgx.' + key + '" data-show="sv-' + key + '" value="' + EP[key] + '"><span class="e-h">' + hint + '</span></div>'; };

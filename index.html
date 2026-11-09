@@ -258,6 +258,15 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasimg .fk { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); background: linear-gradient(180deg, #e3d4b6, #f8f2e6 60%); transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 #env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(120% 90% at 50% 0%, #b79d6c 0%, #dcc9a3 38%, #f3eada 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
+#env.doors { perspective: 1400px; }
+#env.doors .dr { position: absolute; top: 0; bottom: 0; width: 50.2%; overflow: hidden; transition: transform 1.25s cubic-bezier(.6, 0, .2, 1); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 0 22px rgba(60, 30, 10, .25); }
+#env.doors .dl { left: 0; transform-origin: 0 50%; background: linear-gradient(90deg, var(--paper2), var(--paper)); border-right: 1px solid rgba(160, 120, 40, .45); }
+#env.doors .drr { right: 0; transform-origin: 100% 50%; background: linear-gradient(270deg, var(--paper2), var(--paper)); border-left: 1px solid rgba(160, 120, 40, .45); }
+#env.doors .dr i { position: absolute; top: 0; bottom: 0; width: 199.2%; background: var(--ev-m, var(--ev-d)) center / cover no-repeat; display: none; }
+#env.doors.dimg .dr i { display: block; } #env.doors .dl i { left: 0; } #env.doors .drr i { right: 0; }
+#env.doors.open .dl { transform: rotateY(-112deg); } #env.doors.open .drr { transform: rotateY(112deg); }
+#env.doors .seal { z-index: 2; }
+#env.doors .top, #env.doors .tap { z-index: 2; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
   .bgfix { background-image: var(--bg-m, var(--bg-d, none)); }
@@ -270,7 +279,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 @media (prefers-reduced-motion: reduce) {
   html.vmode { scroll-behavior: auto; }
   .mouse::after, #env .seal, .go .rise > *, #vw.bgrev .bgfix, #vw.bgrev .bgsway, #vw.bgrev .bgblur { animation: none; }
-  #env .fl, #env .seal { transition: none; }
+  #env .fl, #env .seal, #env.doors .dr { transition: none; }
 }
 @media (max-width: 380px) { .pg { padding-left: max(54px, env(safe-area-inset-left, 0px)); padding-right: max(54px, env(safe-area-inset-right, 0px)); } .dc { grid-template-columns: 1fr; } }
 /* फॉन्ट: शीर्षक/नावे = Tiro Devanagari Marathi; वर्णन, तारीख, वेळ = Mukta */
@@ -585,7 +594,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var fitFull = BX.fit !== 'cover';
     if (IM.bg && IM.bg.d) h += (fitFull ? '<div class="bgblur"></div>' : '') + '<div class="bgfix' + (fitFull ? ' full' : '') + '"></div>' + '<div class="bgov"></div>';
     if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
-    if (hasEnv) {
+    var doors = BX.open !== 'flap';
+    if (doors) {
+      h += '<div id="env" class="doors' + (hasEnv ? ' dimg' : '') + '" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="dr dl"><i></i></div><div class="dr drr"><i></i></div>' +
+        (hasEnv ? '' : sealSvg(t)) + (hasEnv && !BX.envText ? '' : '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>') + '</div>';
+    } else if (hasEnv) {
       h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
         (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
     } else {
@@ -681,7 +694,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
-      var T = still ? [0, 0, 60] : (pic ? [300, 1650, 2650] : [0, 850, 1450]);
+      var T = still ? [0, 0, 60] : (pic ? [300, 1650, 2650] : (env.classList.contains('doors') ? [0, 950, 1650] : [0, 850, 1450]));
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); if ($('vw')) $('vw').classList.add('bgrev'); }, T[1]));
@@ -807,6 +820,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-fit">फोटो कसा बसवायचा</label><select id="f-fit" data-k="bgx.fit"><option value="full"' + (BX2.fit !== 'cover' ? ' selected' : '') + '>पूर्ण फोटो दिसेल (कडा कापल्या जाणार नाहीत)</option><option value="cover"' + (BX2.fit === 'cover' ? ' selected' : '') + '>पडदा भरून टाका (कडा थोड्या कापल्या जातील)</option></select><span class="e-h">पूर्ण फोटो निवडल्यास फोटोच्या बाजूला उरलेली जागा त्याच फोटोच्या धूसर रंगाने भरली जाते.</span></div><div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
         '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
       h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
+      h += card('उघडण्याचा प्रकार', '<div class="e-f"><label for="f-open">सुरुवातीचे पान कसे उघडावे</label><select id="f-open" data-k="bgx.open"><option value="doors"' + (BX2.open !== 'flap' ? ' selected' : '') + '>दोन दरवाजे (मध्यभागी सील)</option><option value="flap"' + (BX2.open === 'flap' ? ' selected' : '') + '>लखोटा (वरचे झाकण)</option></select><span class="e-h">दरवाजे: टॅप केल्यावर डावा-उजवा दरवाजा दोन्ही बाजूंना उघडतो. खालील "लखोटा" फोटो असल्यास तो दरवाज्यांवर दोन भागांत दिसतो.</span></div>');
       h += slot('envbg', 'लखोटा (ऐच्छिक)', 'बंद लखोट्याचा फोटो (झाकण आणि सील असलेला). टॅप केल्यावर त्याचे वरचे त्रिकोणी झाकण सोनेरी चमकेसह वर उघडते आणि आत निमंत्रण दिसते.');
       var EP = envParams(BX2), SL = function (key, label, min, max, hint) { return '<div class="e-f"><label for="f-' + key + '">' + label + ': <b id="sv-' + key + '">' + EP[key] + '</b>%</label><input id="f-' + key + '" type="range" min="' + min + '" max="' + max + '" step="1" data-k="bgx.' + key + '" data-show="sv-' + key + '" value="' + EP[key] + '"><span class="e-h">' + hint + '</span></div>'; };
       var envM = (IMG.envbg && (IMG.envbg.m || IMG.envbg.d)) || '';

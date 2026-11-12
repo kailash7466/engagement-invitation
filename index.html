@@ -260,6 +260,10 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasimg .fk { clip-path: var(--fc, polygon(0 0, 100% 0, 50% 55%)); background: linear-gradient(180deg, #e3d4b6, #f8f2e6 60%); transform: rotateX(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 #env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(120% 90% at 50% 0%, #b79d6c 0%, #dcc9a3 38%, #f3eada 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
+#env .fo { display: none; }
+#env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; opacity: 0; transition: opacity 1.8s ease-in-out; pointer-events: none; }
+#env.hasopen.open .fo { opacity: 1; }
+#env.hasopen.open .fw { transform: none; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
   .bgfix { background-image: var(--bg-m, var(--bg-d, none)); }
@@ -578,7 +582,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var IM = S.img || {}, BX = S.bgx || {}, ov = Math.max(0, Math.min(90, +BX.overlay || 0)), vs = [];
     var cssUrl = function (u) { return "url('" + String(u).replace(/'/g, '%27').replace(/"/g, '%22') + "')"; };
     var setImg = function (pre, o) { if (o && o.d) { vs.push('--' + pre + '-d:' + cssUrl(o.d)); if (o.m) vs.push('--' + pre + '-m:' + cssUrl(o.m)); } };
-    setImg('bg', IM.bg); setImg('cv', IM.coverbg); setImg('ev', IM.envbg);
+    setImg('bg', IM.bg); setImg('cv', IM.coverbg); setImg('ev', IM.envbg); setImg('eo', IM.envopen);
     vs.push('--ovc:' + hexA(t.paper, ov / 100)); vs.push('--ovc2:' + hexA(t.paper, 0.18));
     var patchHtml = '<div class="fpatch"><div class="fl fpin"></div><svg class="fps" aria-hidden="true"><path class="pl1"></path><path class="pl2"></path></svg></div>', tintHtml = '';
     var TZ = S.tsz || {}; vs.push('--tt:' + (Math.max(60, Math.min(140, +TZ.title || 100)) / 100)); vs.push('--tb:' + (Math.max(60, Math.min(140, +TZ.body || 100)) / 100));
@@ -589,7 +593,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (IM.bg && IM.bg.d) h += (fitFull ? '<div class="bgblur"></div>' : '') + '<div class="bgfix' + (fitFull ? ' full' : '') + '"></div>' + '<div class="bgov"></div>';
     if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
     if (hasEnv) {
-      h += '<div id="env" class="hasimg" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
+      var hasOpen = !!(IM.envopen && IM.envopen.d);
+      h += '<div id="env" class="hasimg' + (hasOpen ? ' hasopen' : '') + '" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' + (hasOpen ? '<div class="fo"></div>' : '') +
         (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
     } else {
       h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +
@@ -685,7 +690,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
-      var T = still ? [0, 0, 60] : (pic ? [300, 2700, 4700] : [0, 850, 1450]);
+      var T = still ? [0, 0, 60] : (pic ? (env.classList.contains('hasopen') ? [300, 3100, 5100] : [300, 2700, 4700]) : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); if ($('vw')) $('vw').classList.add('bgrev'); $('col').classList.add('go'); }, T[1]));
@@ -813,12 +818,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('पार्श्वभूमीची सेटिंग', '<div class="e-f"><label for="f-fit">फोटो कसा बसवायचा</label><select id="f-fit" data-k="bgx.fit"><option value="full"' + (BX2.fit !== 'cover' ? ' selected' : '') + '>पूर्ण फोटो दिसेल (कडा कापल्या जाणार नाहीत)</option><option value="cover"' + (BX2.fit === 'cover' ? ' selected' : '') + '>पडदा भरून टाका (कडा थोड्या कापल्या जातील)</option></select><span class="e-h">पूर्ण फोटो निवडल्यास फोटोच्या बाजूला उरलेली जागा त्याच फोटोच्या धूसर रंगाने भरली जाते.</span></div><div class="e-f"><label for="f-ov">अक्षरे वाचण्यासाठी हलका पडदा (०–८०)</label><input id="f-ov" type="range" min="0" max="80" step="5" data-k="bgx.overlay" value="' + (+BX2.overlay || 0) + '"><span class="e-h">फोटो खूप गडद किंवा गर्दीचा असेल तर वाढवा.</span></div>' +
         '<div class="e-f"><label for="f-pos">फोटोचा कोणता भाग दिसावा</label><select id="f-pos" data-k="bgx.pos"><option value="top"' + (BX2.pos === 'top' ? ' selected' : '') + '>वरचा</option><option value="center"' + (BX2.pos !== 'top' && BX2.pos !== 'bottom' ? ' selected' : '') + '>मधला</option><option value="bottom"' + (BX2.pos === 'bottom' ? ' selected' : '') + '>खालचा</option></select></div>');
       h += slot('coverbg', 'पहिल्या पानाची पार्श्वभूमी (ऐच्छिक)', 'फक्त पहिल्या पानासाठी वेगळा फोटो. नसेल तर वरची पार्श्वभूमी दिसेल.');
+      h += slot('envopen', 'उघडलेला लखोटा (ऐच्छिक)', 'लखोटा उघडल्यानंतर दिसणारा फोटो (झाकण उघडलेला, आतील भाग आणि खालचा V दिसणारा). हा जोडला की टॅप केल्यावर बंद लखोट्याचा फोटो हळूहळू या फोटोत बदलतो आणि मग निमंत्रण पान दिसते; मधे कोणताही कट किंवा सीलमागचा भाग दिसत नाही. बंद लखोट्याच्या फोटोसारख्याच आकाराचा (९:१६) असावा.');
       h += slot('envbg', 'लखोटा (ऐच्छिक)', 'बंद लखोट्याचा फोटो (झाकण आणि सील असलेला). टॅप केल्यावर त्याचे वरचे त्रिकोणी झाकण सोनेरी चमकेसह वर उघडते आणि आत निमंत्रण दिसते.');
-      var EP = envParams(BX2), SL = function (key, label, min, max, hint) { return '<div class="e-f"><label for="f-' + key + '">' + label + ': <b id="sv-' + key + '">' + EP[key] + '</b>%</label><input id="f-' + key + '" type="range" min="' + min + '" max="' + max + '" step="1" data-k="bgx.' + key + '" data-show="sv-' + key + '" value="' + EP[key] + '"><span class="e-h">' + hint + '</span></div>'; };
-      var envM = (IMG.envbg && (IMG.envbg.m || IMG.envbg.d)) || '';
-      h += card('लखोट्याची सेटिंग', (envM ? '<p class="e-h" style="margin-bottom:8px">खालच्या चित्रावरील <b style="color:#d22">लाल रेषा</b> म्हणजे उघडणारे झाकण (सीलसह). पट्ट्या सरकवून लाल रेषा तुमच्या V आणि सीलवर बसवा, <b style="color:#26c">निळ्या रेषा</b> खालच्या V वर बसवा.</p><div class="e-envprev" id="envprev" style="background-image:url(\'' + esc(envM).replace(/'/g, '%27') + '\')"><svg id="envprev-svg" viewBox="0 0 900 1600" preserveAspectRatio="none" aria-hidden="true"><path id="ep-flap" fill="rgba(255,60,60,.12)" stroke="#e22" stroke-width="5"/><path id="ep-low" fill="none" stroke="#26c" stroke-width="5"/></svg></div>' : '<p class="e-h">आधी वर ‘लखोटा’ चे चित्र निवडा. मग येथे झाकणाची जागा जुळवता येईल.</p>') +
-        SL('vy', 'V ची सुरुवात (डाव्या कडेला किती खाली)', 0, 50, 'V ची दोन्ही टोके चित्राच्या डाव्या-उजव्या कडेला जिथे लागतात तिथे आणा.') + SL('sy', 'सीलचा मध्य (किती खाली)', 30, 80, 'सीलच्या मध्यभागी बसवा.') + SL('sr', 'सीलची रुंदी (अर्धी)', 6, 26, 'सील पूर्ण आत येईपर्यंत वाढवा, म्हणजे सील झाकणाबरोबर वर जाईल.') + SL('ay', 'खालच्या V चे टोक', 25, 70, 'लखोट्याच्या खालच्या भागाचे वरचे टोक.') +
-        '<label class="e-chk"><input type="checkbox" data-k="bgx.envText"' + (BX2.envText ? ' checked' : '') + '> लखोट्यावर पाहुण्याचे नाव आणि ‘उघडण्यासाठी टॅप करा’ दाखवा</label>');
       h += slot('ganesh', 'गणपतीची प्रतिमा (पहिल्या पानावर, वरती)', 'पहिल्या पानावर सर्वात वरती (पिवळ्या खुणेच्या जागी) दिसते. पारदर्शक पार्श्वभूमीची PNG प्रतिमा सर्वात चांगली दिसते.', true);
       h += slot('titleimg', 'शीर्षकाची प्रतिमा ("शुभविवाह सोहळा" च्या जागी)', 'ही प्रतिमा जोडली की "शुभविवाह सोहळा" हा मजकूर काढला जातो आणि त्या जागी ही प्रतिमा दिसते. काढली की मजकूर परत येतो. PNG (पारदर्शक) सर्वात चांगले.', true);
       h += slot('couple', 'जोडप्याचा फोटो (ऐच्छिक)', 'पहिल्या पानावर नावांच्या वर अंडाकृती चौकटीत दिसतो.');
@@ -1022,6 +1023,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (!file) return; setStatus('चित्र तयार होत आहे…');
     var two = key === 'bg' || key === 'coverbg' || key === 'envbg', p;
     if (two) p = Promise.all([shrink(file, 2000, 0.8), (key === 'envbg' ? shrink(file, 1600, 0.75, false, 9 / 16) : shrink(file, 1364, 0.82, false, 768 / 1364))]).then(function (r) { return { d: r[0], m: r[1] }; });
+    else if (key === 'envopen') p = shrink(file, 1600, 0.78, false, 9 / 16).then(function (d) { return { d: d }; });
     else if (key === 'ganesh' || key === 'titleimg') p = shrink(file, 1000, 0.92, true).then(function (d) { return { d: d }; });
     else p = shrink(file, key === 'couple' ? 1000 : (key.indexOf('dress') === 0 ? 900 : 1200), 0.8).then(function (d) { return { d: d }; });
     p.then(function (o) { S.img = S.img || {}; S.img[key] = o; markDirty(); renderTab(); setStatus('चित्र जोडले. जतन न केलेले बदल आहेत'); }, function () { toast('हे चित्र वाचता आले नाही. दुसरे निवडा.'); setStatus(''); });
@@ -1094,7 +1096,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
   function hash8(s) { var h = 2166136261; for (var i = 0; i < s.length; i += 7) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
   async function hostImages() {
-    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], couple: ['couple.jpg'], ganesh: ['ganesh.png'], titleimg: ['title.png'], venue: ['venue.jpg'], dress1: ['dress-1.jpg'], dress2: ['dress-2.jpg'], dress3: ['dress-3.jpg'] };
+    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], envopen: ['envelope-open.jpg'], couple: ['couple.jpg'], ganesh: ['ganesh.png'], titleimg: ['title.png'], venue: ['venue.jpg'], dress1: ['dress-1.jpg'], dress2: ['dress-2.jpg'], dress3: ['dress-3.jpg'] };
     var v = Date.now().toString(36), IM = S.img || {}, FL = ['d', 'm'], key, i, j, o, mm, path;
     for (key in NAMES) {
       o = IM[key]; if (!o) continue;

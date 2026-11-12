@@ -261,9 +261,9 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasimg .fin { clip-path: var(--fci, polygon(0 0, 100% 0, 50% 58%)); background: radial-gradient(120% 90% at 50% 0%, #b79d6c 0%, #dcc9a3 38%, #f3eada 100%); }
 #env.hasimg .fb, #env.hasimg .fle, #env.hasimg .fr { display: none; }
 #env .fo { display: none; }
-#env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; opacity: 0; transition: opacity 1.8s ease-in-out; pointer-events: none; }
-#env.hasopen.open .fo { opacity: 1; }
-#env.hasopen.open .fw { transform: none; }
+#env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; pointer-events: none; }
+#env.hasopen .fbase, #env.hasopen .fpatch { transition: opacity 1.9s ease-in-out .4s; }
+#env.hasopen.open .fbase, #env.hasopen.open .fpatch { opacity: 0; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
   .bgfix { background-image: var(--bg-m, var(--bg-d, none)); }
@@ -594,7 +594,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (S.snow && S.snow.on) h += '<canvas id="snow" class="snowc" aria-hidden="true"></canvas>';
     if (hasEnv) {
       var hasOpen = !!(IM.envopen && IM.envopen.d);
-      h += '<div id="env" class="hasimg' + (hasOpen ? ' hasopen' : '') + '" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div><div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' + (hasOpen ? '<div class="fo"></div>' : '') +
+      h += '<div id="env" class="hasimg' + (hasOpen ? ' hasopen' : '') + '" role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fx fin"></div>' + (hasOpen ? '<div class="fo"></div>' : '') + '<div class="fl fbase"></div>' + patchHtml + '<div class="gw"><div class="fw"><div class="fl ft"></div><div class="fx fk"></div></div></div>' +
         (BX.envText ? '<div class="top"><div class="script" style="font-size:1.15rem">' + (gn ? 'प्रिय ' + esc(gn) + ',' : 'प्रिय पाहुणे,') + '</div><div class="script" style="font-size:clamp(1.3rem,6vw,1.7rem);margin-top:6px">' + esc(N(S.envLine || ENVL[S.type] || '')) + '</div></div><div class="tap">उघडण्यासाठी टॅप करा</div>' : '') + '</div>';
     } else {
       h += '<div id="env"' + (hasEnv ? ' class="hasimg"' : '') + ' role="button" tabindex="0" aria-label="निमंत्रण उघडा"><div class="fl ft"></div><div class="fl fb"></div><div class="fl fle"></div><div class="fl fr"></div>' +

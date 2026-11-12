@@ -234,6 +234,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .pg.cov { background-image: linear-gradient(var(--ovc, transparent), var(--ovc, transparent)), var(--cv-d); background-size: cover; background-position: center var(--bgpos, center); background-repeat: no-repeat; }
 .venue-img { width: min(100%, 320px); aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; border: 2px solid var(--gold); display: block; }
 .couple { width: min(44%, 170px); }
+.gan { display: block; max-width: min(46%, 190px); max-height: 24vh; width: auto; height: auto; object-fit: contain; margin: 0 auto; filter: drop-shadow(0 4px 8px rgba(60, 40, 10, .18)); }
+.titimg { display: block; max-width: min(84%, 420px); max-height: 18vh; width: auto; height: auto; object-fit: contain; margin: 0 auto; }
 #env.hasimg .fl { background: var(--ev-m, var(--ev-d)) center / cover no-repeat; filter: none; }
 #env.hasimg .seams { display: none; }
 #env .fbase { display: none; }
@@ -597,7 +599,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 
     h += '<section class="pg' + (hasCv ? ' cov' + (fitFull ? ' full' : '') : '') + '"><div class="rise" style="display:contents">' +
       (IM.couple && IM.couple.d ? '<div class="oval couple"><img src="' + esc(IM.couple.d) + '" alt=""></div>' : '') +
-      (S.tagline ? '<p class="kick">' + esc(N(S.tagline)) + '</p>' : '<span></span>') + '<h2 class="t2 script">' + esc(N(S.headline)) + '</h2>' +
+      (IM.ganesh && IM.ganesh.d ? '<img class="gan" src="' + esc(IM.ganesh.d) + '" alt="श्री गणेश">' : '') +
+      (S.tagline ? '<p class="kick">' + esc(N(S.tagline)) + '</p>' : '<span></span>') + (IM.titleimg && IM.titleimg.d ? '<img class="titimg" src="' + esc(IM.titleimg.d) + '" alt="' + esc(N(S.headline)) + '">' : '<h2 class="t2 script">' + esc(N(S.headline)) + '</h2>') +
       (sh.names === true ? '<h1 class="t1 script" style="margin:0">' + esc(N(S.groom)) + '</h1><div class="script" style="font-size:1.5rem">आणि</div><h1 class="t1 script" style="margin:0">' + esc(N(S.bride)) + '</h1>' : '') +
       '<div class="rule"></div>' + (S.message ? '<p class="sub">' + esc(N(S.message)) + '</p>' : '') + '</div></section>';
 
@@ -813,6 +816,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('लखोट्याची सेटिंग', (envM ? '<p class="e-h" style="margin-bottom:8px">खालच्या चित्रावरील <b style="color:#d22">लाल रेषा</b> म्हणजे उघडणारे झाकण (सीलसह). पट्ट्या सरकवून लाल रेषा तुमच्या V आणि सीलवर बसवा, <b style="color:#26c">निळ्या रेषा</b> खालच्या V वर बसवा.</p><div class="e-envprev" id="envprev" style="background-image:url(\'' + esc(envM).replace(/'/g, '%27') + '\')"><svg id="envprev-svg" viewBox="0 0 900 1600" preserveAspectRatio="none" aria-hidden="true"><path id="ep-flap" fill="rgba(255,60,60,.12)" stroke="#e22" stroke-width="5"/><path id="ep-low" fill="none" stroke="#26c" stroke-width="5"/></svg></div>' : '<p class="e-h">आधी वर ‘लखोटा’ चे चित्र निवडा. मग येथे झाकणाची जागा जुळवता येईल.</p>') +
         SL('vy', 'V ची सुरुवात (डाव्या कडेला किती खाली)', 0, 50, 'V ची दोन्ही टोके चित्राच्या डाव्या-उजव्या कडेला जिथे लागतात तिथे आणा.') + SL('sy', 'सीलचा मध्य (किती खाली)', 30, 80, 'सीलच्या मध्यभागी बसवा.') + SL('sr', 'सीलची रुंदी (अर्धी)', 6, 26, 'सील पूर्ण आत येईपर्यंत वाढवा, म्हणजे सील झाकणाबरोबर वर जाईल.') + SL('ay', 'खालच्या V चे टोक', 25, 70, 'लखोट्याच्या खालच्या भागाचे वरचे टोक.') +
         '<label class="e-chk"><input type="checkbox" data-k="bgx.envText"' + (BX2.envText ? ' checked' : '') + '> लखोट्यावर पाहुण्याचे नाव आणि ‘उघडण्यासाठी टॅप करा’ दाखवा</label>');
+      h += slot('ganesh', 'गणपतीची प्रतिमा (पहिल्या पानावर, वरती)', 'पहिल्या पानावर सर्वात वरती (पिवळ्या खुणेच्या जागी) दिसते. पारदर्शक पार्श्वभूमीची PNG प्रतिमा सर्वात चांगली दिसते.', true);
+      h += slot('titleimg', 'शीर्षकाची प्रतिमा ("शुभविवाह सोहळा" च्या जागी)', 'ही प्रतिमा जोडली की "शुभविवाह सोहळा" हा मजकूर काढला जातो आणि त्या जागी ही प्रतिमा दिसते. काढली की मजकूर परत येतो. PNG (पारदर्शक) सर्वात चांगले.', true);
       h += slot('couple', 'जोडप्याचा फोटो (ऐच्छिक)', 'पहिल्या पानावर नावांच्या वर अंडाकृती चौकटीत दिसतो.');
       h += slot('venue', 'स्थळाचा फोटो (ऐच्छिक)', 'विवाह स्थळाच्या पानावर चित्राऐवजी हा फोटो दिसतो.');
       h += card('गॅलरीचे फोटो', '<p class="e-h">गॅलरीचे फोटो ‘फोटो’ विभागात जोडा.</p>');
@@ -1014,6 +1019,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     if (!file) return; setStatus('चित्र तयार होत आहे…');
     var two = key === 'bg' || key === 'coverbg' || key === 'envbg', p;
     if (two) p = Promise.all([shrink(file, 2000, 0.8), (key === 'envbg' ? shrink(file, 1600, 0.75, false, 9 / 16) : shrink(file, 1364, 0.82, false, 768 / 1364))]).then(function (r) { return { d: r[0], m: r[1] }; });
+    else if (key === 'ganesh' || key === 'titleimg') p = shrink(file, 1000, 0.92, true).then(function (d) { return { d: d }; });
     else p = shrink(file, key === 'couple' ? 1000 : (key.indexOf('dress') === 0 ? 900 : 1200), 0.8).then(function (d) { return { d: d }; });
     p.then(function (o) { S.img = S.img || {}; S.img[key] = o; markDirty(); renderTab(); setStatus('चित्र जोडले. जतन न केलेले बदल आहेत'); }, function () { toast('हे चित्र वाचता आले नाही. दुसरे निवडा.'); setStatus(''); });
   }
@@ -1085,7 +1091,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
   function hash8(s) { var h = 2166136261; for (var i = 0; i < s.length; i += 7) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
   async function hostImages() {
-    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], couple: ['couple.jpg'], venue: ['venue.jpg'], dress1: ['dress-1.jpg'], dress2: ['dress-2.jpg'], dress3: ['dress-3.jpg'] };
+    var NAMES = { bg: ['background.jpg', 'background-mobile.jpg'], coverbg: ['cover.jpg', 'cover-mobile.jpg'], envbg: ['envelope.jpg', 'envelope-mobile.jpg'], couple: ['couple.jpg'], ganesh: ['ganesh.png'], titleimg: ['title.png'], venue: ['venue.jpg'], dress1: ['dress-1.jpg'], dress2: ['dress-2.jpg'], dress3: ['dress-3.jpg'] };
     var v = Date.now().toString(36), IM = S.img || {}, FL = ['d', 'm'], key, i, j, o, mm, path;
     for (key in NAMES) {
       o = IM[key]; if (!o) continue;

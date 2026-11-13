@@ -685,9 +685,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var ICON_ON = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/></svg>';
     var ICON_OFF = '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 16V5l9-2v11"/><circle cx="6.5" cy="16" r="2.5"/><circle cx="15.5" cy="14" r="2.5"/><path d="M3 3l16 16"/></svg>';
     function paintMus() { if (mus) { mus.innerHTML = muted ? ICON_OFF : ICON_ON; mus.setAttribute('aria-label', muted ? 'गाणे चालू करा' : 'गाणे बंद करा'); } }
+    function prepMusic() {
+      if (!bgm || !S.music || S.music.auto === false) return;
+      try { bgm.muted = true; var pp = bgm.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
+    }
     function startMusic() {
       if (!bgm || !S.music || S.music.auto === false) { if (bgm && mus) { mus.hidden = false; muted = true; paintMus(); } return; }
-      try { if (S.music.start > 0) bgm.currentTime = +S.music.start; } catch (e) {}
+      try { bgm.muted = false; bgm.currentTime = S.music.start > 0 ? +S.music.start : 0; } catch (e) {}
       var p = bgm.play(); mus.hidden = false;
       if (p && p.then) p.then(function () { playing = true; paintMus(); }, function () { muted = true; paintMus(); });
       else { playing = true; paintMus(); }
@@ -700,13 +704,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     document.addEventListener('visibilitychange', vis); cleanups.push(function () { document.removeEventListener('visibilitychange', vis); if (bgm) { try { bgm.pause(); } catch (e) {} } });
 
     function openEnv() {
-      if (opened) return; opened = true; playOpenSnd(S.openSnd); startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
+      if (opened) return; opened = true; playOpenSnd(S.openSnd); prepMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
       var T = still ? [0, 0, 60] : (pic ? (env.classList.contains('hasopen') ? [300, 4700, 6700] : [300, 2700, 4700]) : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); if ($('vw')) $('vw').classList.add('bgrev'); $('col').classList.add('go'); }, T[1]));
-      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); startSfx(); }, T[2]));
+      timers.push(setTimeout(function () { env.remove(); document.documentElement.classList.remove('locked'); $('col').classList.add('go'); window.scrollTo(0, 0); onScroll(); startMusic(); startSfx(); }, T[2]));
     }
     function startSfx() {
       if (!S.sfx || S.sfx.on === false || !S.sfx.src || !('IntersectionObserver' in window)) return;

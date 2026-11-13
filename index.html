@@ -263,7 +263,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env .fo { display: none; }
 #env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; pointer-events: none; }
 #env.hasopen .fpatch { display: none; }
-#env.hasopen .fbase { transition: opacity .9s ease-in-out .3s; }
+#env.hasopen .fbase { transition: opacity .45s ease-out; }
+#env.hasopen.glow .gw { filter: none; }
 #env.hasopen.open .fbase { opacity: 0; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {

@@ -424,6 +424,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
 
   /* ---------------- page sound effect ---------------- */
+  var osAud = null;
+  function playOpenSnd(cfg) {
+    if (!cfg || !cfg.src) return;
+    try { if (osAud) osAud.pause(); osAud = new Audio(cfg.src); osAud.volume = Math.max(0.02, Math.min(1, (+cfg.vol || 80) / 100)); var pr = osAud.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+  }
   var sfxCtx = null, sfxAud = null, sfxAudSrc = '', sfxLast = 0;
   function sfxUnlock(cfg) {
     try {
@@ -695,7 +700,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     document.addEventListener('visibilitychange', vis); cleanups.push(function () { document.removeEventListener('visibilitychange', vis); if (bgm) { try { bgm.pause(); } catch (e) {} } });
 
     function openEnv() {
-      if (opened) return; opened = true; startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
+      if (opened) return; opened = true; playOpenSnd(S.openSnd); startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
       var T = still ? [0, 0, 60] : (pic ? (env.classList.contains('hasopen') ? [300, 4700, 6700] : [300, 2700, 4700]) : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
@@ -848,6 +853,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         (X.src ? '<div class="e-f"><label>सध्याचा आवाज: ' + esc(X.name || 'फाइल') + '</label><audio controls src="' + esc(X.src) + '"></audio></div><button class="e-btn" type="button" data-act="rmsfx">आवाज काढा</button>' : '<p class="e-h">अजून आवाज निवडलेला नाही.</p>') +
         '<div class="e-f"><label for="sf-vol">आवाज किती मोठा: <b id="sv-sfxvol">' + (+X.vol || 70) + '</b>%</label><input id="sf-vol" type="range" min="5" max="100" step="5" data-k="sfx.vol" data-show="sv-sfxvol" value="' + (+X.vol || 70) + '"></div>' +
         (X.src ? '<button class="e-btn" type="button" data-act="sfxtest">▶ आवाज ऐका</button>' : ''));
+      var O = S.openSnd || {};
+      h += card('सील उघडण्याचा आवाज', '<p class="e-h" style="margin-bottom:10px">पाहुण्याने सीलवर टॅप केल्याबरोबर हा आवाज/संगीत एकदा वाजेल (फक्त लखोटा उघडताना). फाइल जोडली नाही तर कोणताही आवाज वाजणार नाही.</p>' +
+        '<div class="e-f"><label for="os-file">आवाजाची फाइल (MP3 / M4A / WAV, लहान क्लिप, ३ MB पर्यंत)</label><input id="os-file" type="file" accept="audio/*"></div>' +
+        (O.src ? '<div class="e-f"><label>सध्याचा आवाज: ' + esc(O.name || 'फाइल') + '</label><audio controls src="' + esc(O.src) + '"></audio></div><button class="e-btn" type="button" data-act="rmos">आवाज काढा</button>' : '<p class="e-h">अजून आवाज निवडलेला नाही.</p>') +
+        '<div class="e-f"><label for="os-vol">आवाज किती मोठा: <b id="sv-osvol">' + (+O.vol || 80) + '</b>%</label><input id="os-vol" type="range" min="5" max="100" step="5" data-k="openSnd.vol" data-show="sv-osvol" value="' + (+O.vol || 80) + '"></div>');
     } else if (k === 'music') {
       var m = S.music || {};
       h += card('गाणे', '<p class="e-h" style="margin-bottom:10px">लखोटा उघडण्यासाठी पाहुण्याने टॅप केल्यावर गाणे आपोआप सुरू होईल. खाली उजवीकडे आवाज बंद-चालू करण्याचे बटण असेल.</p>' +
@@ -953,6 +963,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   function onField(t, isChange) {
     if (t.dataset.evimg) { if (isChange && t.files && t.files[0]) { var ei = +t.dataset.evimg; setStatus('चित्र तयार होत आहे…'); shrink(t.files[0], 160, 0.9, true).then(function (d) { S.events[ei].img = d; markDirty(); renderTab(); }, function () { toast('हे चित्र वाचता आले नाही'); }); } return; }
     if (t.dataset.img) { if (isChange && t.files && t.files[0]) addImage(t.dataset.img, t.files[0]); return; }
+    if (t.id === 'os-file') { if (isChange) addOpenSnd(t.files && t.files[0]); return; }
     if (t.id === 'sf-file') { if (isChange) addSfx(t.files && t.files[0]); return; }
     if (t.id === 'ph-file' || t.id === 'mu-file') { if (isChange) (t.id === 'ph-file' ? addPhotos(t.files) : addSong(t.files && t.files[0])); return; }
     if (t.dataset.gh) { var s = ghStore(); s[t.dataset.gh] = t.value.trim(); ls.set('mn-gh', JSON.stringify(s)); return; }
@@ -998,6 +1009,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     else if (act === 'rmevimg') { delete S.events[+b.dataset.i].img; markDirty(); renderTab(); }
     else if (act === 'rmimg') { if (S.img) delete S.img[b.dataset.k]; markDirty(); renderTab(); }
     else if (act === 'rmsfx') { S.sfx.src = ''; S.sfx.name = ''; S.sfx.size = 0; markDirty(); renderTab(); }
+    else if (act === 'rmos') { S.openSnd = { src: '', name: '', size: 0, vol: (S.openSnd && S.openSnd.vol) || 80 }; markDirty(); renderTab(); }
     else if (act === 'sfxtest') { sfxLast = 0; sfxUnlock(S.sfx); sfxPlay(Object.assign({}, S.sfx, { on: true })); }
     else if (act === 'rmsong') { S.music.src = ''; S.music.name = ''; S.music.size = 0; markDirty(); renderTab(); }
     else if (act === 'addguests') {
@@ -1095,6 +1107,21 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav' })[mm[1]] || 'mp3';
     var name = 'music.' + ext; await ghPut(name, mm[2], 'गाणे अद्ययावत'); m.src = name + '?v=' + Date.now().toString(36);
   }
+  function addOpenSnd(file) {
+    if (!file) return;
+    if (file.type && file.type.indexOf('audio') !== 0) { toast('कृपया आवाजाची (audio) फाइल निवडा'); return; }
+    if (file.size > 3 * 1024 * 1024) { toast('फाइल मोठी आहे. ३ MB पेक्षा लहान क्लिप निवडा.'); return; }
+    var fr = new FileReader(); setStatus('आवाज जोडत आहे…');
+    fr.onload = function () { S.openSnd = { src: fr.result, name: file.name, size: file.size, vol: (S.openSnd && S.openSnd.vol) || 80 }; markDirty(); renderTab(); };
+    fr.onerror = function () { toast('आवाज वाचता आला नाही'); };
+    fr.readAsDataURL(file);
+  }
+  async function hostOpenSnd() {
+    var m = S.openSnd; if (!m || !m.src || m.src.indexOf('data:') !== 0 || (m.size && m.size < 400000)) return;
+    var mm = /^data:([^;]+);base64,(.*)$/.exec(m.src); if (!mm) return;
+    var ext = ({ 'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/x-wav': 'wav' })[mm[1]] || 'mp3';
+    var name = 'open-sound.' + ext; await ghPut(name, mm[2], 'सील-ध्वनी अद्ययावत'); m.src = name + '?v=' + Date.now().toString(36);
+  }
   async function hostSfx() {
     var m = S.sfx; if (!m || !m.src || m.src.indexOf('data:') !== 0 || (m.size && m.size < 400000)) return;
     var mm = /^data:([^;]+);base64,(.*)$/.exec(m.src); if (!mm) return;
@@ -1146,7 +1173,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
         var a = await CLAUDE.use('artifact'); if (!a) { var ee = new Error('x'); ee.code = 'not_granted'; throw ee; }
         await a.publish(buildDoc(false)); try { sessionStorage.setItem('mn-done', '1'); } catch (x) {}
       } else {
-        ghBr = ''; await hostSong(); await hostSfx(); await hostImages(); setStatus('जतन होत आहे…');
+        ghBr = ''; await hostSong(); await hostSfx(); await hostOpenSnd(); await hostImages(); setStatus('जतन होत आहे…');
         await ghPut(ghCfg().path || 'index.html', b64s(buildDoc(true)), 'निमंत्रण अद्ययावत');
         setStatus('GitHub वर जतन झाले ✓', 'ok'); toast('जतन झाले. बदल दिसायला १-२ मिनिटे लागतात.');
       }

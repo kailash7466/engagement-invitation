@@ -265,8 +265,9 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasopen .fpatch { display: none; }
 #env.hasopen .fbase { transition: opacity .45s ease-out; }
 #env.hasopen .fk { display: none; }
-#env.hasopen.open .fw { transform: perspective(1200px) rotateX(-92deg); }
-#env.hasopen.open .ft { animation: goldShine 2.6s ease-in-out both; }
+#env.hasopen .fw { transition: transform 4.2s cubic-bezier(.45, 0, .3, 1); }
+#env.hasopen.open .fw { transform: perspective(1100px) rotateX(92deg); }
+#env.hasopen.open .ft { animation: goldShine 4.2s ease-in-out both; }
 @keyframes goldShine { 0% { filter: none; } 35% { filter: brightness(1.14) sepia(.4) saturate(1.5) contrast(1.05); } 100% { filter: brightness(1.06) sepia(.2) saturate(1.2); } }
 #env.hasopen.open .fbase { opacity: 0; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
@@ -696,7 +697,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     function openEnv() {
       if (opened) return; opened = true; startMusic(); if (S.sfx && S.sfx.on !== false) sfxUnlock(S.sfx);
       var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, pic = env.classList.contains('hasimg');
-      var T = still ? [0, 0, 60] : (pic ? (env.classList.contains('hasopen') ? [300, 3100, 5100] : [300, 2700, 4700]) : [0, 850, 1450]);
+      var T = still ? [0, 0, 60] : (pic ? (env.classList.contains('hasopen') ? [300, 4700, 6700] : [300, 2700, 4700]) : [0, 850, 1450]);
       if (pic) env.classList.add('glow');
       timers.push(setTimeout(function () { env.classList.add('open'); }, T[0]));
       timers.push(setTimeout(function () { env.classList.add('fade'); if ($('vw')) $('vw').classList.add('bgrev'); $('col').classList.add('go'); }, T[1]));

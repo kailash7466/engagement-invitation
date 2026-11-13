@@ -264,6 +264,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; pointer-events: none; }
 #env.hasopen .fpatch { display: none; }
 #env.hasopen .fbase { transition: opacity .45s ease-out; }
+#env.hasopen .fk { display: none; }
+#env.hasopen.open .fw { transform: perspective(1200px) rotateX(-92deg); }
 #env.hasopen.open .ft { animation: goldShine 2.6s ease-in-out both; }
 @keyframes goldShine { 0% { filter: none; } 35% { filter: brightness(1.14) sepia(.4) saturate(1.5) contrast(1.05); } 100% { filter: brightness(1.06) sepia(.2) saturate(1.2); } }
 #env.hasopen.open .fbase { opacity: 0; }

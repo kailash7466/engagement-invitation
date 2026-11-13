@@ -264,7 +264,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 #env.hasopen .fo { display: block; position: absolute; inset: 0; background: var(--eo-d) center / cover no-repeat; pointer-events: none; }
 #env.hasopen .fpatch { display: none; }
 #env.hasopen .fbase { transition: opacity .45s ease-out; }
-#env.hasopen.glow .gw { filter: none; }
+#env.hasopen.open .ft { animation: goldShine 2.6s ease-in-out both; }
+@keyframes goldShine { 0% { filter: none; } 35% { filter: brightness(1.14) sepia(.4) saturate(1.5) contrast(1.05); } 100% { filter: brightness(1.06) sepia(.2) saturate(1.2); } }
 #env.hasopen.open .fbase { opacity: 0; }
 #env.hasimg .top, #env.hasimg .tap { text-shadow: 0 0 10px var(--paper), 0 0 3px var(--paper); }
 @media (max-width: 700px) {
@@ -277,6 +278,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
 .e-imgprev img { max-width: 160px; max-height: 120px; border-radius: 8px; border: 1px solid var(--e-line); object-fit: cover; background: repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
 @media (prefers-reduced-motion: reduce) {
   html.vmode { scroll-behavior: auto; }
+  #env.hasopen.open .ft { animation: none; }
   .mouse::after, #env .seal, .go .rise > *, #vw.bgrev .bgfix, #vw.bgrev .bgsway, #vw.bgrev .bgblur { animation: none; }
   #env .fl, #env .seal { transition: none; }
 }

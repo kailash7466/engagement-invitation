@@ -668,7 +668,16 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     return h + '</div>';
   }
 
+  function pwHash(t) { var h1 = 0xdeadbeef, h2 = 0x41c6ce57, i, c; t = 'mangal|' + t; for (i = 0; i < t.length; i++) { c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36); }
+  function pwUnlocked() { try { return sessionStorage.getItem('mg-unlock') === S.pw.h; } catch (e) { return false; } }
+  function pwGate() {
+    leaveAll(); mode = 'view'; document.documentElement.classList.add('vmode'); document.body.className = 'm-view'; applyTheme();
+    root.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:var(--paper,#fbf3e4);text-align:center"><form id="pwf" style="width:min(100%,340px)"><div class="script" style="font-size:1.7rem;color:var(--accent,#8b1a3a);margin-bottom:6px">निमंत्रण</div><p style="margin:0 0 16px;color:#5b4a3a">हे निमंत्रण पाहण्यासाठी पासवर्ड टाका</p><input id="pwi" type="password" autocomplete="off" placeholder="पासवर्ड" style="width:100%;box-sizing:border-box;padding:12px 14px;font:inherit;font-size:1rem;border:1px solid #c9b48a;border-radius:10px;background:#fff;text-align:center"><div id="pwe" style="min-height:22px;margin:8px 0;color:#b3261e;font-size:.9rem"></div><button type="submit" style="width:100%;padding:12px;border:0;border-radius:10px;background:var(--accent,#8b1a3a);color:#fff;font:inherit;font-weight:700;font-size:1rem">उघडा</button></form></div>';
+    var f = $('pwf'); setTimeout(function () { try { $('pwi').focus(); } catch (e) {} }, 50);
+    f.onsubmit = function (ev) { ev.preventDefault(); if (pwHash($('pwi').value.trim()) === S.pw.h) { try { sessionStorage.setItem('mg-unlock', S.pw.h); } catch (e) {} enterView(false); } else { $('pwe').textContent = 'पासवर्ड चुकीचा आहे'; $('pwi').select(); } };
+  }
   function enterView(preview) {
+    if (!preview && S.pw && S.pw.h && !pwUnlocked()) { pwGate(); return; }
     leaveAll(); mode = 'view';
     document.documentElement.classList.add('vmode'); document.body.className = 'm-view';
     applyTheme(); root.innerHTML = viewerHtml(preview);
@@ -878,6 +887,11 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
       h += card('कोणती पाने दाखवायची', '<label class="e-chk"><input type="checkbox" data-k="show.names"' + ((S.show || {}).names === true ? ' checked' : '') + '> पहिल्या पानावर वर-वधूची नावे दाखवा</label>' + chk('show.family', 'वर-वधूच्या कुटुंबाचे पान') + chk('show.countdown', 'उलटगणती') + chk('show.venue', 'विवाह स्थळ') + chk('show.timeline', 'कार्यक्रमांची वेळरेषा') + chk('show.dress', 'पोशाख') + chk('show.gallery', 'फोटो गॅलरी'));
     } else if (k === 'share') {
       h += shareHtml();
+      var hasPw = !!(S.pw && S.pw.h);
+      h += card('निमंत्रणाला पासवर्ड (ऐच्छिक)', '<p class="e-h" style="margin-bottom:10px">पासवर्ड ठेवला तर पाहुण्याला निमंत्रण उघडण्यापूर्वी तो टाकावा लागेल. पासवर्ड तुम्ही निमंत्रणाच्या मेसेजमध्ये पाहुण्यांना सांगा. हे साधे कुलूप आहे; लिंक माहीत नसलेल्यांपासून आणि गुगल शोधापासून पान लपवायला पुरेसे आहे. तुमच्या एडिटरमधील पूर्वावलोकनाला पासवर्ड लागत नाही.</p>' +
+        '<p class="e-h"><b>' + (hasPw ? 'सध्या पासवर्ड चालू आहे.' : 'सध्या पासवर्ड नाही (निमंत्रण सर्वांना उघडते).') + '</b></p>' +
+        '<div class="e-f"><label for="pw-in">' + (hasPw ? 'नवा पासवर्ड' : 'पासवर्ड') + '</label><input id="pw-in" type="text" autocomplete="off" placeholder="उदा. kailash2027"></div>' +
+        '<button class="e-btn" type="button" data-act="pwset">पासवर्ड ठेवा</button>' + (hasPw ? ' <button class="e-btn" type="button" data-act="pwrm">पासवर्ड काढा</button>' : ''));
     }
     return h;
   }
@@ -1013,6 +1027,8 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     else if (act === 'rmevimg') { delete S.events[+b.dataset.i].img; markDirty(); renderTab(); }
     else if (act === 'rmimg') { if (S.img) delete S.img[b.dataset.k]; markDirty(); renderTab(); }
     else if (act === 'rmsfx') { S.sfx.src = ''; S.sfx.name = ''; S.sfx.size = 0; markDirty(); renderTab(); }
+    else if (act === 'pwset') { var pv = ($('pw-in') && $('pw-in').value || '').trim(); if (pv.length < 3) { toast('पासवर्ड किमान ३ अक्षरांचा ठेवा'); } else { S.pw = { h: pwHash(pv) }; markDirty(); toast('पासवर्ड ठेवला. आता GitHub वर प्रकाशित करा.'); renderTab(); } }
+    else if (act === 'pwrm') { S.pw = null; markDirty(); toast('पासवर्ड काढला. आता GitHub वर प्रकाशित करा.'); renderTab(); }
     else if (act === 'rmos') { S.openSnd = { src: '', name: '', size: 0, vol: (S.openSnd && S.openSnd.vol) || 80 }; markDirty(); renderTab(); }
     else if (act === 'sfxtest') { sfxLast = 0; sfxUnlock(S.sfx); sfxPlay(Object.assign({}, S.sfx, { on: true })); }
     else if (act === 'rmsong') { S.music.src = ''; S.music.name = ''; S.music.size = 0; markDirty(); renderTab(); }
@@ -1087,7 +1103,7 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
     var tail = '<div id="root"></div><script type="application/json" id="inv-data">' + data + END + '<script id="app">' + app + END;
     if (web) {
       var og = '<meta property="og:title" content="' + names + '"><meta property="og:description" content="' + (S.type === 'engagement' ? 'साखरपुड्याचे निमंत्रण' : 'विवाह निमंत्रण') + '. उघडण्यासाठी टॅप करा."><meta property="og:type" content="website">';
-      return '<!doctype html><html lang="mr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + names + '</title>' + og + fl + '<style id="css">' + css + '</style></head><body>' + tail + '</body></html>';
+      return '<!doctype html><html lang="mr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><title>' + names + '</title>' + og + fl + '<style id="css">' + css + '</style></head><body>' + tail + '</body></html>';
     }
     return SKEL + '\n<title>' + names + '</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n' + fl + '\n<style id="css">' + css + '</style>\n' + tail + '\n</body></html>';
   }

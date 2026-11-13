@@ -669,12 +669,13 @@ body.m-view { background-image: linear-gradient(180deg, var(--paper2), var(--pap
   }
 
   function pwHash(t) { var h1 = 0xdeadbeef, h2 = 0x41c6ce57, i, c; t = 'mangal|' + t; for (i = 0; i < t.length; i++) { c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36); }
-  function pwUnlocked() { try { return sessionStorage.getItem('mg-unlock') === S.pw.h; } catch (e) { return false; } }
+  var pwOk = '';
+  function pwUnlocked() { return pwOk === S.pw.h; }
   function pwGate() {
     leaveAll(); mode = 'view'; document.documentElement.classList.add('vmode'); document.body.className = 'm-view'; applyTheme();
     root.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:var(--paper,#fbf3e4);text-align:center"><form id="pwf" style="width:min(100%,340px)"><div class="script" style="font-size:1.7rem;color:var(--accent,#8b1a3a);margin-bottom:6px">निमंत्रण</div><p style="margin:0 0 16px;color:#5b4a3a">हे निमंत्रण पाहण्यासाठी पासवर्ड टाका</p><input id="pwi" type="password" autocomplete="off" placeholder="पासवर्ड" style="width:100%;box-sizing:border-box;padding:12px 14px;font:inherit;font-size:1rem;border:1px solid #c9b48a;border-radius:10px;background:#fff;text-align:center"><div id="pwe" style="min-height:22px;margin:8px 0;color:#b3261e;font-size:.9rem"></div><button type="submit" style="width:100%;padding:12px;border:0;border-radius:10px;background:var(--accent,#8b1a3a);color:#fff;font:inherit;font-weight:700;font-size:1rem">उघडा</button></form></div>';
     var f = $('pwf'); setTimeout(function () { try { $('pwi').focus(); } catch (e) {} }, 50);
-    f.onsubmit = function (ev) { ev.preventDefault(); if (pwHash($('pwi').value.trim()) === S.pw.h) { try { sessionStorage.setItem('mg-unlock', S.pw.h); } catch (e) {} enterView(false); } else { $('pwe').textContent = 'पासवर्ड चुकीचा आहे'; $('pwi').select(); } };
+    f.onsubmit = function (ev) { ev.preventDefault(); if (pwHash($('pwi').value.trim()) === S.pw.h) { pwOk = S.pw.h; enterView(false); } else { $('pwe').textContent = 'पासवर्ड चुकीचा आहे'; $('pwi').select(); } };
   }
   function enterView(preview) {
     if (!preview && S.pw && S.pw.h && !pwUnlocked()) { pwGate(); return; }
